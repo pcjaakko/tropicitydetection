@@ -17,7 +17,7 @@ using namespace std;
 struct coord3d {
   double x[3];
 
-  coord3d(const vector <double> vec) { x[0] = vec[0]; x[1] = vec[1]; x[2] = vec[2]; }
+//  coord3d(const vector <double> vec) { x[0] = vec[0]; x[1] = vec[1]; x[2] = vec[2]; }
   coord3d(const double y[3]) { x[0] = y[0]; x[1] = y[1]; x[2] = y[2]; }
   coord3d(const double x_, const double y, const double z) { x[0] = x_; x[1] = y; x[2] = z; }
   coord3d() { x[0] = 0; x[1] = 0; x[2] = 0; }

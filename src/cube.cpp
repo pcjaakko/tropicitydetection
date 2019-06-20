@@ -71,11 +71,10 @@ class Cube {
 		int x = coord[0];
 		int y = coord[1];
 		int z = coord[2];
-		vector<double> vec;
-		vec.push_back(field[z*(field.size()/3.0)+y*(field.size()/9.0)+x][0]);
-		vec.push_back(field[z*(field.size()/3.0)+y*(field.size()/9.0)+x][1]);
-		vec.push_back(field[z*(field.size()/3.0)+y*(field.size()/9.0)+x][2]);
-		coord3d flow(vec);
+		double doublex = field[z*(field.size()/3.0)+y*(field.size()/9.0)+x][0];
+		double doubley = field[z*(field.size()/3.0)+y*(field.size()/9.0)+x][1];
+		double doublez =  field[z*(field.size()/3.0)+y*(field.size()/9.0)+x][2];
+		coord3d flow(doublex,doubley,doublez);
 		return flow;
 	}
 		
