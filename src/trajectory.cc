@@ -23,4 +23,10 @@ void trajectory::complete(){
 
 }
 
+int trajectory::classify() const {
+
+
+return 0;
+
+}
 
