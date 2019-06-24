@@ -67,16 +67,28 @@ class Cube {
 		cout << "The file-writing has not yet been implemented. " << filename << "\n";
 	}
 
-	coord3d getvector(vector<int> coord){
-		int x = coord[0];
-		int y = coord[1];
-		int z = coord[2];
-		double doublex = field[z*(field.size()/3.0)+y*(field.size()/9.0)+x][0];
-		double doubley = field[z*(field.size()/3.0)+y*(field.size()/9.0)+x][1];
-		double doublez =  field[z*(field.size()/3.0)+y*(field.size()/9.0)+x][2];
-		coord3d flow(doublex,doubley,doublez);
-		return flow;
+
+	coord3d getvector(coord3d position){
+		coord3d intpos((int)position[0],(int)position[1],(int)position[2]);
+		coord3d sumvec(0,0,0);
+		double normsum = 0;
+		double norm;
+		for (int z=0; z<2; ++z) {
+			for (int y=0; y<2; ++y) {
+				for (int x = 0; x<2; ++x) {
+					norm = (coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z)-position).norm();
+					if (norm == 0.0) {
+						return field[position[2]*(field.size()/3.0)+position[1]*(field.size()/9.0)+position[0]];
+					}
+					normsum += 1.0/norm;
+					sumvec += getvector(coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z))/norm;
+				}
+			}
+		}
+		return sumvec/normsum;
 	}
+
+
 		
 };
 
