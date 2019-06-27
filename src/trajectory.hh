@@ -42,9 +42,12 @@ class trajectory {
   // extend trajectory until some criterion is met
   void complete(const Cube& cube);
   // return -1 or +1 for B dot (\sum r_i cross (p_i+1 - p_i)) less/greater zero
+  int classify(const Cube& cube) const;
+
   void printstatus(const Cube& cube);
 
-  int classify(const Cube& cube) const;
+  
+  bool to_mathematica(const trajectory &t, FILE *file);
 
 
   friend ostream& operator<<(ostream &s, const trajectory& T){

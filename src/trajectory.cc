@@ -13,13 +13,13 @@ using namespace std;
 void trajectory::extend(const Cube& cube){
   coord3d nextposition(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length);
   if (cube.outofbounds(nextposition)) {return;}
-  append(nextposition,cube.getvector(nextposition));  
-  }
+  append(nextposition,cube.getvector(nextposition));
+}
 
 
 void trajectory::printstatus(const Cube& cube){
     cout <<fixed <<"direction at position    "<<positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length << "was appended.\n";
-} 
+}
 
 void trajectory::complete(const Cube& cube){
   int i = 0;
@@ -48,5 +48,15 @@ int trajectory::classify(const Cube& cube) const {
     return 2;
   }
 
+}
+
+
+bool trajectory::to_mathematica(const trajectory &t, FILE *file){
+  ostringstream s;
+  s << "traj = {{" << fixed << positions << "}};" << endl;
+  s << "Graphics3D[{Arrow@#} & /@ data]" << endl;
+  fputs(s.str().c_str(),file);
+
+  return ferror(file) == 0;
 }
 
