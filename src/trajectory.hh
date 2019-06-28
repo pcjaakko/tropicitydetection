@@ -37,8 +37,10 @@ class trajectory {
   }
   pair<coord3d, coord3d> get(const unsigned int i) const { return make_pair(positions[i], directions[i]); }
 
-  // extend trajectory by one element
+  // extend trajectory by one element using Euler
   void extend(const Cube& cube);
+  // extend trajectory by one element using Runge-Kutta
+  void rungekutta(const Cube& cube);
   // extend trajectory until some criterion is met
   void complete(const Cube& cube);
   // return -1 or +1 for B dot (\sum r_i cross (p_i+1 - p_i)) less/greater zero

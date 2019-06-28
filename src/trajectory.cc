@@ -10,22 +10,32 @@
 using namespace std;
 
 
-void trajectory::extend(const Cube& cube){
+
+void trajectory::extend(const Cube& cube){  //Euler
   coord3d nextposition(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length);
   if (cube.outofbounds(nextposition)) {return;}
-  append(nextposition,cube.getvector(nextposition));
-}
+  append(nextposition,cube.getvector(nextposition));  
+  }
 
+
+
+void trajectory::rungekutta(const Cube& cube){ //Runge-Kutta
+
+}
 
 void trajectory::printstatus(const Cube& cube){
-    cout <<fixed <<"direction at position    "<<positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length << "was appended.\n";
-}
+    cout <<fixed <<"position: "<<positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length;
+    cout <<"   vector before this: " << directions[positions.size()-1];
+    cout<<"\n";//cout << "veiictors: " << cube.getvector(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length)<<"\n"; 
+   
+} 
 
 void trajectory::complete(const Cube& cube){
   int i = 0;
   while (i<1000){
     extend(cube);
     if (i%100==0) {
+      //cout<<"step no. " << i <<":\t";
       //printstatus(cube);
     }
     ++i;
@@ -50,6 +60,16 @@ int trajectory::classify(const Cube& cube) const {
 
 }
 
+void trajectory::write2mathematicalist() {
+  ofstream outputfile;
+  outputfile.open("trajectory.txt");
+  outputfile<<"traj = {{";
+  for (int i = 0; i<positions.size();i++) {    
+    outputfile<<"{"<<positions[i][0]<<","<<positions[i][1]<<","<<positions[i][2]<<"}";
+    if(i<positions.size()-1) {outputfile<<",";}
+  }
+  outputfile<<"}}";
+}
 
 bool trajectory::to_mathematica(const trajectory &t, FILE *file){
   ostringstream s;

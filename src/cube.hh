@@ -66,9 +66,9 @@ class Cube {
       if (regex_search(vtiline, match, imagedata)) {
         istringstream iss(vtiline);
         vector<string> results ((istream_iterator<string>(iss)),istream_iterator<string>());
-        xrange = stoi(results[3]); 
-        yrange = stoi(results[5]); 
-        zrange = stoi(results[7]); 
+        xrange = stoi(results[3])+1; 
+        yrange = stoi(results[5])+1; 
+        zrange = stoi(results[7])+1; 
       }
     }
   }
@@ -94,7 +94,9 @@ class Cube {
         for (int x = 0; x<2; ++x) {
           norm = (coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z)-position).norm();
           if (norm == 0.0) {
-            return field[position[2]*xrange*yrange+position[1]*xrange+position[0]];
+//            cout << "listindex: " <<fixed<<position[2]*xrange*yrange+position[1]*xrange+position[0] << "location at index: " <<  "\n"; 
+//          cout << field[position[2]*xrange*yrange+position[1]*xrange+position[0]] << "is the field at " << position << "\n";
+          return field[position[2]*xrange*yrange+position[1]*xrange+position[0]];
 	  }
           normsum += 1.0/norm;
           sumvec += getvector(coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z))/norm;
@@ -106,7 +108,7 @@ class Cube {
   }
 
   bool outofbounds (coord3d position) const {
-    if (position[0]>xrange || position[1]>yrange || position[2]>zrange) {
+    if (position[0]>xrange || position[1]>yrange || position[2]>zrange || position[0]<0 || position[1]<0 || position[2]<0) {
       return true;
     }
     return false;
