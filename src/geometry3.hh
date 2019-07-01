@@ -26,6 +26,8 @@ struct coord3d {
   coord3d operator/(const double d)   const { return coord3d(*this) /= d; }
   coord3d& operator/=(const double d){ x[0] /= d; x[1] /= d; x[2] /= d; return *this; }
   coord3d operator*(const double d)   const { return coord3d(*this) *= d; }
+  friend coord3d operator*(const double d, const coord3d& c3d) { return c3d * d; }
+  friend coord3d operator*(const int i, const coord3d& c3d) { return c3d * i; }
   coord3d& operator*=(const double d){ x[0] *= d; x[1] *= d; x[2] *= d; return *this; }
   coord3d operator+(const coord3d& y) const { return coord3d(*this) += y; }
   coord3d& operator+=(const coord3d& y){ x[0] += y[0]; x[1] += y[1]; x[2] += y[2]; return *this; }
