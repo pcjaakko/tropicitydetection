@@ -10,7 +10,7 @@ using namespace std;
 
 int main () {
 	coord3d position0(1,1,1);
-	coord3d positionA(15,18.5,7);
+	coord3d positionA(1.600007e+01,2.037377e+01,9.899878e+00);
 	coord3d positionB(1.0001,1.0001,1.0001);
 	coord3d positionC(1.00001,1.00001,1.00001);
 	coord3d positionD(1.000001,1.000001,1.000001);
@@ -22,6 +22,7 @@ int main () {
 	trajectory traj(positionA,cube.getvector(positionA),0.001);
 	traj.complete(cube);
 	traj.write2mathematicalist();
+	cout <<"classification: "<<traj.classify(cube);
 	/*cout << cube.getvector(coord3d(6.865040e+00,1.739498e+01,7.005310e+00));
 	cout << cube.getvector(coord3d(6,17,7));
 	cout << cube.getvector(coord3d(0,0,0));

@@ -20,6 +20,19 @@ void trajectory::extend(const Cube& cube){  //Euler
 
 
 void trajectory::rungekutta(const Cube& cube){ //Runge-Kutta
+  coord3d k1 = cube.getvector(positions[positions.size()-1])*step_length;
+  coord3d v1 = cube.getvector(positions[positions.size()-1]+k1*0.5);
+  coord3d k2 = v1*step_length;
+  coord3d v2 = cube.getvector(positions[positions.size()-1]+k2*0.5);
+  coord3d k3 = v2*step_length;
+  coord3d v3 = cube.getvector(positions[positions.size()-1]+k3);
+  coord3d k4 = v3*step_length;
+  coord3d nextposition(positions[positions.size()-1]+(k1+k2*2.0+k3*2.0+k4)/6.0);
+  if (cube.outofbounds(nextposition)) {
+    cout<<"oob\n";  
+    return;
+  }
+  append(nextposition,cube.getvector(nextposition));  
 
 }
 
@@ -31,30 +44,48 @@ void trajectory::printstatus(const Cube& cube){
 } 
 
 void trajectory::complete(const Cube& cube){
-  int i = 0;
-  while (i<1000){
-    extend(cube);
-    if (i%100==0) {
-      //cout<<"step no. " << i <<":\t";
-      //printstatus(cube);
+  int i = 1;
+  double dist2farthest=-1;
+ 
+cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\n";
+cout<<0.1*dist2farthest<<"\n";
+ 
+  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest){ //if we get to a point that is less than a thousandth of the
+    //extend(cube);								//maximum distance of a point to the starting point, stop extending
+    //cout<<dist2farthest<<"\t\tdist2farthest\t";
+    //cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdisti";
+    cout<<"\t"<<positions[positions.size()-1]<<"\n";
+    //cout<<"y's in da cube:"<<
+    rungekutta(cube);
+    if ((positions[positions.size()-1]-positions[0]).norm()>dist2farthest) {
+      dist2farthest=(positions[positions.size()-1]-positions[0]).norm();
     }
+    /*if (i%500==0){ 
+      cout<<"step no. " << i <<":\t";
+      printstatus(cube);
+    }*/
     ++i;
   }
+    //cout<<dist2farthest<<"\t\tdist2farthest\t";
+    //cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdist\n";
 }
 
-int trajectory::classify(const Cube& cube) const {
-  coord3d bfield(0,0,1); //this should be read from a file
-  double halfofsideofcube = pow(cube.field.size(), 1.0/3.0)/2;
-  coord3d cubecenter(halfofsideofcube,halfofsideofcube,halfofsideofcube);
-  coord3d crosssum(0,0,0);
 
-  if (bfield.dot(crosssum) < 0) {
+int trajectory::classify(const Cube& cube) const { 
+  coord3d bfield(0,0,1); //this should be read from a file
+  coord3d crossum(0,0,0);
+
+  for (int i = 1; i<directions.size(); i++){
+    crossum+=positions[i].cross(positions[i]-positions[i-1]);
+  }
+
+  if (bfield.dot(crossum) < 0) { //clockwise
     return 0;
   }
-  else if (bfield.dot(crosssum) > 0) {
+  else if (bfield.dot(crossum) > 0) { //counter-clockwise
     return 1;
   }
-  else {
+  else {                         //neither. something happened
     return 2;
   }
 

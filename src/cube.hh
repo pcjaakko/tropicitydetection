@@ -94,8 +94,8 @@ class Cube {
         for (int x = 0; x<2; ++x) {
           norm = (coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z)-position).norm();
           if (norm == 0.0) {
-//            cout << "listindex: " <<fixed<<position[2]*xrange*yrange+position[1]*xrange+position[0] << "location at index: " <<  "\n"; 
-//          cout << field[position[2]*xrange*yrange+position[1]*xrange+position[0]] << "is the field at " << position << "\n";
+            //cout << "listindex: " <<fixed<<position[2]*xrange*yrange+position[1]*xrange+position[0] << "location at index: " <<  "\n"; 
+          cout << field[position[2]*xrange*yrange+position[1]*xrange+position[0]] << "is the field at " << position << "\n";
           return field[position[2]*xrange*yrange+position[1]*xrange+position[0]];
 	  }
           normsum += 1.0/norm;
