@@ -47,23 +47,24 @@ void trajectory::complete(const Cube& cube){
   int i = 1;
   double dist2farthest=-1;
  
-cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\n";
-cout<<0.1*dist2farthest<<"\n";
+  cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\n";
+  cout<<0.1*dist2farthest<<"\n";
  
   while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest){ //if we get to a point that is less than a thousandth of the
+  //while (i<4000){ //if we get to a point that is less than a thousandth of the
     //extend(cube);								//maximum distance of a point to the starting point, stop extending
     //cout<<dist2farthest<<"\t\tdist2farthest\t";
     //cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdisti";
-    cout<<"\t"<<positions[positions.size()-1]<<"\n";
+    //cout<<"\t"<<positions[positions.size()-1]<<"\n";    // ::-):-):-):-):-):-)-)
     //cout<<"y's in da cube:"<<
     rungekutta(cube);
     if ((positions[positions.size()-1]-positions[0]).norm()>dist2farthest) {
       dist2farthest=(positions[positions.size()-1]-positions[0]).norm();
     }
-    /*if (i%500==0){ 
+    if (true){//i%500==0){ 
       cout<<"step no. " << i <<":\t";
       printstatus(cube);
-    }*/
+    }
     ++i;
   }
     //cout<<dist2farthest<<"\t\tdist2farthest\t";
