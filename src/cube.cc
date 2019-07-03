@@ -6,7 +6,6 @@
 #include <regex>
 #include <cmath>
 
-
 #include "geometry3.hh"
 #include "cube.hh"
 #include "trajectory.hh"
@@ -53,16 +52,19 @@ Cube::Cube(string filename){
   }
 }
 
+
 void Cube::writecube(const string& filename) const {
   cout << "File-writing has not yet been implemented. " << filename << "\n";
 }
 
-double Cube::fieldlength() const {
-  return pow(field.size(),1.0/3.0);
-} 
 
-coord3d Cube::getvector(coord3d position) const{
-  if (position[0]>xrange || position[1]>yrange || position[2]>zrange) {
+void Cube::testfunc(){
+  cout<<"TESTING HARD\n";
+}
+
+
+coord3d Cube::getvector(coord3d position) const{ //linear interpolation
+  if (position[0]>xrange || position[1]>yrange || position[2]>zrange || position[0]<0 || position[1]<0 || position[2]<0) {
     return coord3d(7777777,7777777,7777777);
   }
   coord3d intpos((int)position[0],(int)position[1],(int)position[2]);
@@ -71,18 +73,19 @@ coord3d Cube::getvector(coord3d position) const{
   double norm;
   for (int z=0; z<2; ++z) {
     for (int y=0; y<2; ++y) {
-      for (int x = 0; x<2; ++x) {
+      for (int x=0; x<2; ++x) {
         norm = (coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z)-position).norm();
         if (norm == 0.0) {
-          //cout << "listindex: " <<fixed<<position[2]*xrange*yrange+position[1]*xrange+position[0] << "location at index: " <<  "\n"; 
-        cout << field[position[2]*xrange*yrange+position[1]*xrange+position[0]] << "is the field at " << position << "\n";
-        return field[position[2]*xrange*yrange+position[1]*xrange+position[0]];
-    }
+        //cout << "listindex: " <<fixed<<position[2]*xrange*yrange+position[1]*xrange+position[0] << "location at index: " <<  "\n"; 
+        //cout << field[position[2]*xrange*yrange+position[1]*xrange+position[0]] << "is the field at " << position << "\n";
+          return field[position[2]*xrange*yrange+position[1]*xrange+position[0]];
+        }
         normsum += 1.0/norm;
-        sumvec += getvector(coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z))/norm;
+        sumvec += field[(intpos[2]+z)*xrange*yrange+(intpos[1]+y)*xrange+intpos[0]+x]/norm;
+        //cout << field[(intpos[2]+z)*xrange*yrange+(intpos[1]+y)*xrange+intpos[0]+x] << "is the field at {" <<intpos[0]+x<<","<<intpos[1]+y<<","<<intpos[2]+z<<"}" << "\n";
+        }
       }
     }
-  }
 
   return sumvec/normsum;
 }
@@ -93,6 +96,4 @@ bool Cube::outofbounds (coord3d position) const {
   }
   return false;
 }
-    
-
-
+ 
