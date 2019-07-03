@@ -1,10 +1,10 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <list>
 
 #include "geometry3.hh"
 #include "trajectory.hh"
+#include "cube.hh"
 
 using namespace std;
 
