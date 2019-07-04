@@ -28,10 +28,6 @@ void trajectory::rungekutta(const Cube& cube){ //Runge-Kutta
   coord3d v3 = cube.getvector(positions[positions.size()-1]+k3);
   coord3d k4 = v3*step_length;
   coord3d nextposition(positions[positions.size()-1]+(k1+k2*2.0+k3*2.0+k4)/6.0);
-  if (cube.outofbounds(nextposition)) {
-    cout<<"oob\n";  
-    return;
-  }
   append(nextposition,cube.getvector(nextposition));  
 
 }
@@ -50,7 +46,7 @@ void trajectory::complete(const Cube& cube){
   cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\n";
   cout<<0.1*dist2farthest<<"\n";
  
-  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest){ //if we get to a point that is less than a thousandth of the
+  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest && i<100000 ){ //if we get to a point that is less than a thousandth of the
   //while (i<4000){ //if we get to a point that is less than a thousandth of the
     //extend(cube);								//maximum distance of a point to the starting point, stop extending
     //cout<<dist2farthest<<"\t\tdist2farthest\t";
@@ -58,17 +54,22 @@ void trajectory::complete(const Cube& cube){
     //cout<<"\t"<<positions[positions.size()-1]<<"\n";    // ::-):-):-):-):-):-)-)
     //cout<<"y's in da cube:"<<
     rungekutta(cube);
+    if (cube.outofbounds(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length)){
+      cout<<"OUT OF BOUNDS!";
+      oob = true;
+      return;
+    }
     if ((positions[positions.size()-1]-positions[0]).norm()>dist2farthest) {
       dist2farthest=(positions[positions.size()-1]-positions[0]).norm();
     }
-    if (true){//i%500==0){ 
-      cout<<"step no. " << i <<":\t";
+    if (i%100==0){//i%500==0){ 
+      //cout<<"step no. " << i <<":\t";
       printstatus(cube);
+    cout<<dist2farthest<<"\t\tdist2farthest\t";
+    cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdist\n";
     }
     ++i;
   }
-    //cout<<dist2farthest<<"\t\tdist2farthest\t";
-    //cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdist\n";
 }
 
 
@@ -76,12 +77,14 @@ int trajectory::classify(const Cube& cube) const {
   coord3d bfield(0,0,1); //this should be read from a file
   coord3d crossum(0,0,0);
 
+  if (oob==true) {return 0;}
+
   for (int i = 1; i<directions.size(); i++){
     crossum+=positions[i].cross(positions[i]-positions[i-1]);
   }
 
   if (bfield.dot(crossum) < 0) { //clockwise
-    return 0;
+    return -1;
   }
   else if (bfield.dot(crossum) > 0) { //counter-clockwise
     return 1;

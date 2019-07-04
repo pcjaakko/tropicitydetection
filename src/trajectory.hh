@@ -48,7 +48,7 @@ class trajectory {
   void write2mathematicalist();
   void printstatus(const Cube& cube);
 
-  
+  bool oob = false;  
   bool to_mathematica(const trajectory &t, FILE *file);
 
 

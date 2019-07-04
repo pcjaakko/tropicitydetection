@@ -21,21 +21,20 @@ int main () {
 
 //Cube cube("../jvec-minimal.vti");
 	Cube cube("../QZVPPDh2te-m06-2x.vti");
-	vector<vector<int>> oujee = cube.gettropplaneZ(7.0, cube);
-	for (int i=0;i<oujee.size();i++){
-		cout<<oujee[i]<<"\n";
+	vector<vector<int>> tropplane = cube.gettropplaneZ(7.0, cube);
+	for (int i=0;i<tropplane.size();i++){
+		cout<<tropplane[i]<<"\n";
 	}	
-	string aijaa="aijaa";
-	cube.writetropplaneZ(aijaa, oujee);
+	string filename="tropicities.txt";
+	cube.writetropplaneZ(filename,tropplane);
 
 
-
-	cout<<"?oob"<<cube.outofbounds(coord3d(-6.844538e+00,6.455112e+00,7.009452e+00))<<"boo?\n";
-//	trajectory traj(positionA,cube.getvector(positionA),100.0);
-//	traj.complete(cube);
-//	traj.write2mathematicalist();
-//	cout <<"classification: "<<traj.classify(cube);
-
+/*
+	trajectory traj(positionA,cube.getvector(positionA),0.1);
+	traj.complete(cube);
+	traj.write2mathematicalist();
+	cout <<"classification: "<<traj.classify(cube);
+*/
 /*
 	coord3d pert(0.00001,0,0);
 for (int j = 0; j<10;j++){

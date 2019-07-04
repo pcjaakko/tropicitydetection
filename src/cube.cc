@@ -114,7 +114,7 @@ vector<vector<int>> Cube::gettropplaneZ(double zcoord, const Cube& cube){
 
 void Cube::writetropplaneZ(string filename, vector<vector<int>> tropicities) const{
   ofstream outputfile;
-  outputfile.open("tropicities.txt");
+  outputfile.open(filename);
   outputfile<<"trop = {\n";
   for (int i=0;i<tropicities.size();i++){
     outputfile<<tropicities[i];
