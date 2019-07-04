@@ -96,4 +96,30 @@ bool Cube::outofbounds (coord3d position) const {
   }
   return false;
 }
- 
+
+vector<vector<int>> Cube::gettropplaneZ(double zcoord, const Cube& cube){
+  vector<vector<int>>tropplaneZ;
+  for (int j=0;j<yrange;j++) {
+    vector<int> vektori;
+    tropplaneZ.push_back(vektori);
+    for (int i=0;i<xrange;i++){
+      trajectory traj(coord3d(i,j,zcoord),getvector(coord3d(i,j,zcoord)),1.0);
+      traj.complete(cube);
+      tropplaneZ[j].push_back(traj.classify(cube));
+      //tropplaneZ[j].push_back(1);
+    }
+  }
+  return tropplaneZ;
+}
+
+void Cube::writetropplaneZ(string filename, vector<vector<int>> tropicities) const{
+  ofstream outputfile;
+  outputfile.open("tropicities.txt");
+  outputfile<<"trop = {\n";
+  for (int i=0;i<tropicities.size();i++){
+    outputfile<<tropicities[i];
+    if(i<tropicities.size()-1){outputfile<<",";}
+    outputfile<<"\n";
+  }
+  outputfile<<"}";
+} 

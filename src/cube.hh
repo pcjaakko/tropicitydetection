@@ -30,6 +30,8 @@ class Cube {
   public:
   void testfunc();
   Cube(string filename);
+  vector<vector<int>> gettropplaneZ(double zcoord, const Cube& cube);
+  void writetropplaneZ(string filename, vector<vector<int>> tropicities) const;;
   void writecube(const string& filename) const;
   coord3d getvector(coord3d position) const;
   bool outofbounds (coord3d position) const; 

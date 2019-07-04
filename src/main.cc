@@ -10,8 +10,9 @@ using namespace std;
 
 int main () {
 	coord3d position0(1,1,1);
-	coord3d positionA(1.610005e+01,2.037307e+01,9.899878e+00);
+//	coord3d positionA(4,2,7);
 	//coord3d positionA(1.500005e+01,3.500005e+01,9.899878e+00);
+	coord3d positionA(10,20,7);
 	coord3d positionB(1.0001,1.0001,1.0001);
 	coord3d positionC(1.00001,1.00001,1.00001);
 	coord3d positionD(1.000001,1.000001,1.000001);
@@ -20,14 +21,22 @@ int main () {
 
 //Cube cube("../jvec-minimal.vti");
 	Cube cube("../QZVPPDh2te-m06-2x.vti");
+	vector<vector<int>> oujee = cube.gettropplaneZ(7.0, cube);
+	for (int i=0;i<oujee.size();i++){
+		cout<<oujee[i]<<"\n";
+	}	
+	string aijaa="aijaa";
+	cube.writetropplaneZ(aijaa, oujee);
 
 
-	trajectory traj(positionA,cube.getvector(positionA),0.001);
-	traj.complete(cube);
-	traj.write2mathematicalist();
-	cout <<"classification: "<<traj.classify(cube);
 
+	cout<<"?oob"<<cube.outofbounds(coord3d(-6.844538e+00,6.455112e+00,7.009452e+00))<<"boo?\n";
+//	trajectory traj(positionA,cube.getvector(positionA),100.0);
+//	traj.complete(cube);
+//	traj.write2mathematicalist();
+//	cout <<"classification: "<<traj.classify(cube);
 
+/*
 	coord3d pert(0.00001,0,0);
 for (int j = 0; j<10;j++){
 	for (int i = 0; i<30; i++){
@@ -38,7 +47,7 @@ for (int j = 0; j<10;j++){
 	}
 		positionA+=coord3d(0.0003,0,0);
 }
-
+*/
 
 
 	/*cout << cube.getvector(coord3d(6.865040e+00,1.739498e+01,7.005310e+00));
