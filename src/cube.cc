@@ -103,7 +103,7 @@ vector<vector<int>> Cube::gettropplaneZ(double zcoord, const Cube& cube){
     vector<int> vektori;
     tropplaneZ.push_back(vektori);
     for (int i=0;i<xrange;i++){
-      trajectory traj(coord3d(i,j,zcoord),getvector(coord3d(i,j,zcoord)),1.0);
+      trajectory traj(coord3d(i,j,zcoord),getvector(coord3d(i,j,zcoord)),10);
       traj.complete(cube);
       tropplaneZ[j].push_back(traj.classify(cube));
       //tropplaneZ[j].push_back(1);

@@ -46,7 +46,7 @@ void trajectory::complete(const Cube& cube){
   cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\n";
   cout<<0.1*dist2farthest<<"\n";
  
-  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest && i<100000 ){ //if we get to a point that is less than a thousandth of the
+  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest && i<10000000){ //if we get to a point that is less than a thousandth of the
   //while (i<4000){ //if we get to a point that is less than a thousandth of the
     //extend(cube);								//maximum distance of a point to the starting point, stop extending
     //cout<<dist2farthest<<"\t\tdist2farthest\t";
