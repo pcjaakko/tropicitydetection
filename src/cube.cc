@@ -61,10 +61,15 @@ void Cube::writecube(const string& filename) const {
 void Cube::testfunc(){
   cout<<"TESTING HARD\n";
 }
-
+bool Cube::outofbounds (coord3d position) const {
+  if (position[0]>xrange || position[1]>yrange || position[2]>zrange || position[0]<0 || position[1]<0 || position[2]<0) {
+    return true;
+  }
+  return false;
+}
 
 coord3d Cube::getvector(coord3d position) const{ //linear interpolation
-  if (position[0]>xrange || position[1]>yrange || position[2]>zrange || position[0]<0 || position[1]<0 || position[2]<0) {
+  if (outofbounds(position)) {
     return coord3d(7777777,7777777,7777777);
   }
   coord3d intpos((int)position[0],(int)position[1],(int)position[2]);
@@ -90,21 +95,26 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
   return sumvec/normsum;
 }
 
-bool Cube::outofbounds (coord3d position) const {
-  if (position[0]>xrange || position[1]>yrange || position[2]>zrange || position[0]<0 || position[1]<0 || position[2]<0) {
-    return true;
-  }
-  return false;
-}
+
 
 vector<vector<int>> Cube::gettropplaneZ(double zcoord, const Cube& cube){
   vector<vector<int>>tropplaneZ;
+  cout<<"EMPTY PLANE CREATED\n";
   for (int j=0;j<yrange;j++) {
     vector<int> vektori;
     tropplaneZ.push_back(vektori);
     for (int i=0;i<xrange;i++){
-      trajectory traj(coord3d(i,j,zcoord),getvector(coord3d(i,j,zcoord)),10);
+      trajectory traj(coord3d(i,j,zcoord),getvector(coord3d(i,j,zcoord)),0.01);
+      cout<<"\nNEW TRAJECTORY CREATED AT\t"<<i<<","<<j<<","<<zcoord<<"\n";
       traj.complete(cube);
+      string filename = "";
+      filename.append(to_string(i));
+      filename.append("-");
+      filename.append(to_string(j));
+      filename.append("-");
+      filename.append(to_string(zcoord));
+      filename.append(".txt");
+      traj.write2mathematicalist(filename);
       tropplaneZ[j].push_back(traj.classify(cube));
       //tropplaneZ[j].push_back(1);
     }

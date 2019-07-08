@@ -38,7 +38,7 @@ void trajectory::printstatus(const Cube& cube){
     cout<<"\n";//cout << "veiictors: " << cube.getvector(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length)<<"\n"; 
    
 } 
-
+/*
 void trajectory::complete(const Cube& cube){
   int i = 1;
   double dist2farthest=-1;
@@ -46,8 +46,8 @@ void trajectory::complete(const Cube& cube){
   cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\n";
   cout<<0.1*dist2farthest<<"\n";
  
-  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest && i<10000000){ //if we get to a point that is less than a thousandth of the
-  //while (i<4000){ //if we get to a point that is less than a thousandth of the
+  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest && i<20000){ //if we get to a point that is less than a thousandth of the
+  //while (i<20000){ //if we get to a point that is less than a thousandth of the
     //extend(cube);								//maximum distance of a point to the starting point, stop extending
     //cout<<dist2farthest<<"\t\tdist2farthest\t";
     //cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdisti";
@@ -71,6 +71,48 @@ void trajectory::complete(const Cube& cube){
     ++i;
   }
 }
+*/
+
+void trajectory::complete(const Cube& cube){
+  int i = 0;
+  double dist2farthest=-1;
+
+  cout<<"\tBEGINNING OF TRAJ-DRAWING!  positions[0]: "<<positions[0]<<"\n";
+  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest){ //if we get to a point that is less than a thousandth of the
+    printstatus(cube);
+    cout<<dist2farthest<<"\t\tdist2farthest\t";
+    cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdist\n";
+    cout<<"    step_length***"<<step_length<<"";
+    rungekutta(cube);
+    i++;
+    
+    if (cube.outofbounds(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length)){
+      cout<<"OUT OF BOUNDS! t. trajectory.cc\n";
+      oob = true;
+      return;
+    }
+  
+    if ((positions[positions.size()-1]-positions[0]).norm()>dist2farthest) {
+      dist2farthest=(positions[positions.size()-1]-positions[0]).norm();
+    }
+
+    if (i>200000){ //a single trajectory must not be more than this many steps
+      cout<<"we at "<<positions[0]<<",\t with step_length "<<step_length<<"\n";
+      cout<<"resetting traj and increasing step_length...\n";
+      i=0;
+      step_length+=2;
+      int size = positions.size();
+      for (int a=0;a<size-1;a++){
+        positions.pop_back();
+        directions.pop_back();
+      }
+      dist2farthest = -1;
+      cout<<"reset done. possize: "<<positions.size()<<" dirsize: "<<directions.size()<<"\n";
+      cout<<"reset done. poos0:   "<<positions[positions.size()-1]<<" dir0:    "<<directions[directions.size()-1]<<"\n";
+    }
+  }
+}
+      
 
 
 int trajectory::classify(const Cube& cube) const { 
@@ -95,9 +137,9 @@ int trajectory::classify(const Cube& cube) const {
 
 }
 
-void trajectory::write2mathematicalist() {
+void trajectory::write2mathematicalist(string filename) {
   ofstream outputfile;
-  outputfile.open("trajectory.txt");
+  outputfile.open(filename);
   outputfile<<"traj = {{";
   for (int i = 0; i<positions.size();i++) {    
     outputfile<<"{"<<positions[i][0]<<","<<positions[i][1]<<","<<positions[i][2]<<"}";

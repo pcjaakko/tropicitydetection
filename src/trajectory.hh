@@ -45,7 +45,7 @@ class trajectory {
   void complete(const Cube& cube);
   // return -1 or +1 for B dot (\sum r_i cross (p_i+1 - p_i)) less/greater zero
   int classify(const Cube& cube) const;
-  void write2mathematicalist();
+  void write2mathematicalist(string filename);
   void printstatus(const Cube& cube);
 
   bool oob = false;  
