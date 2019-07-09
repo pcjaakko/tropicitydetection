@@ -17,22 +17,16 @@ int main () {
 	for (int i=0;i<tropplane.size();i++){
 		cout<<tropplane[i]<<"\n";
 	}	
-	string filename="tropicities.txt";
+	string filename="new-tropicities.txt";
 	cube.writetropplaneZ(filename,tropplane);
 //*/
-
-/*
-	coord3d positionA(10,30,7);
+/*	
+	coord3d positionA(11,8,7);
 	trajectory traj(positionA,cube.getvector(positionA),0.1);
 	traj.complete(cube);
-        string filename = "";
-        double i = 2.0;
-        filename.append(to_string(i));
-        filename.append(".txt");
-	traj.write2mathematicalist(filename);
+	traj.write2mathematicalist("newtraj.txt");
 	cout <<"classification: "<<traj.classify(cube); 
 */
 
-cube.testfunc();
 	return 0;
 }

@@ -107,7 +107,7 @@ vector<vector<int>> Cube::gettropplaneZ(double zcoord, const Cube& cube){
       trajectory traj(coord3d(i,j,zcoord),getvector(coord3d(i,j,zcoord)),0.01);
       cout<<"\nNEW TRAJECTORY CREATED AT\t"<<i<<","<<j<<","<<zcoord<<"\n";
       traj.complete(cube);
-      string filename = "";
+      string filename = "new-";
       filename.append(to_string(i));
       filename.append("-");
       filename.append(to_string(j));

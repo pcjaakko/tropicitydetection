@@ -20,13 +20,13 @@ void trajectory::extend(const Cube& cube){  //Euler
 
 
 void trajectory::rungekutta(const Cube& cube){ //Runge-Kutta
-  coord3d k1 = cube.getvector(positions[positions.size()-1])*step_length;
+  coord3d k1 = cube.getvector(positions[positions.size()-1]).normalised()*step_length;
   coord3d v1 = cube.getvector(positions[positions.size()-1]+k1*0.5);
-  coord3d k2 = v1*step_length;
+  coord3d k2 = v1.normalised()*step_length;
   coord3d v2 = cube.getvector(positions[positions.size()-1]+k2*0.5);
-  coord3d k3 = v2*step_length;
+  coord3d k3 = v2.normalised()*step_length;
   coord3d v3 = cube.getvector(positions[positions.size()-1]+k3);
-  coord3d k4 = v3*step_length;
+  coord3d k4 = v3.normalised()*step_length;
   coord3d nextposition(positions[positions.size()-1]+(k1+k2*2.0+k3*2.0+k4)/6.0);
   append(nextposition,cube.getvector(nextposition));  
 
@@ -96,7 +96,7 @@ void trajectory::complete(const Cube& cube){
       dist2farthest=(positions[positions.size()-1]-positions[0]).norm();
     }
 
-    if (i>200000){ //a single trajectory must not be more than this many steps
+    if (i>10000){ //a single trajectory must not be more than this many steps
       cout<<"we at "<<positions[0]<<",\t with step_length "<<step_length<<"\n";
       cout<<"resetting traj and increasing step_length...\n";
       i=0;
