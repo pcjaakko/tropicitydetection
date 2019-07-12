@@ -11,7 +11,7 @@ using namespace std;
 
 
 
-void trajectory::extend(const Cube& cube){  //Euler
+void trajectory::extend_euler(const Cube& cube){  //Euler
   coord3d nextposition(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length);
   if (cube.outofbounds(nextposition)) {return;}
   append(nextposition,cube.getvector(nextposition));  
@@ -19,7 +19,7 @@ void trajectory::extend(const Cube& cube){  //Euler
 
 
 
-void trajectory::rungekutta(const Cube& cube){ //Runge-Kutta
+void trajectory::extend_rungekutta(const Cube& cube){ //Runge-Kutta
   coord3d k1 = cube.getvector(positions[positions.size()-1]).normalised()*step_length;
   coord3d v1 = cube.getvector(positions[positions.size()-1]+k1*0.5);
   coord3d k2 = v1.normalised()*step_length;
@@ -74,8 +74,8 @@ void trajectory::complete(const Cube& cube){
 */
 
 void trajectory::complete(const Cube& cube){
-  int i = 0;
-  double dist2farthest=-1;
+  int step = 0;
+  double dist2farthest = 0;
 
   cout<<"\tBEGINNING OF TRAJ-DRAWING!  positions[0]: "<<positions[0]<<"\n";
   while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest){ //if we get to a point that is less than a thousandth of the
@@ -83,8 +83,8 @@ void trajectory::complete(const Cube& cube){
     cout<<dist2farthest<<"\t\tdist2farthest\t";
     cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdist\n";
     cout<<"    step_length***"<<step_length<<"";
-    rungekutta(cube);
-    i++;
+    extend_rungekutta(cube);
+    step++;
     
     if (cube.outofbounds(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length)){
       cout<<"OUT OF BOUNDS! t. trajectory.cc\n";
@@ -96,10 +96,10 @@ void trajectory::complete(const Cube& cube){
       dist2farthest=(positions[positions.size()-1]-positions[0]).norm();
     }
 
-    if (i>10000){ //a single trajectory must not be more than this many steps
+    if (step>10000){ //a single trajectory must not be more than this many steps
       cout<<"we at "<<positions[0]<<",\t with step_length "<<step_length<<"\n";
       cout<<"resetting traj and increasing step_length...\n";
-      i=0;
+      step=0;
       step_length+=2;
       int size = positions.size();
       for (int a=0;a<size-1;a++){

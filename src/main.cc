@@ -13,7 +13,7 @@ int main () {
 	//Cube cube("../jvec-minimal.vti");
 	Cube cube("../QZVPPDh2te-m06-2x.vti");   
 ///*
-	vector<vector<int>> tropplane = cube.gettropplaneZ(7.0, cube);
+	vector<vector<int>> tropplane = cube.gettropplaneZ(7.0);
 	for (int i=0;i<tropplane.size();i++){
 		cout<<tropplane[i]<<"\n";
 	}	

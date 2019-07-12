@@ -16,6 +16,7 @@ class trajectory {
   vector<coord3d> positions;
   vector<coord3d> directions;
   double step_length;
+  bool oob = false;  
 
   public:
 
@@ -38,17 +39,17 @@ class trajectory {
   pair<coord3d, coord3d> get(const unsigned int i) const { return make_pair(positions[i], directions[i]); }
 
   // extend trajectory by one element using Euler
-  void extend(const Cube& cube);
+  void extend_euler(const Cube& cube);
   // extend trajectory by one element using Runge-Kutta
-  void rungekutta(const Cube& cube);
+  void extend_rungekutta(const Cube& cube);
   // extend trajectory until some criterion is met
   void complete(const Cube& cube);
   // return -1 or +1 for B dot (\sum r_i cross (p_i+1 - p_i)) less/greater zero
   int classify(const Cube& cube) const;
+
   void write2mathematicalist(string filename);
   void printstatus(const Cube& cube);
 
-  bool oob = false;  
   bool to_mathematica(const trajectory &t, FILE *file);
 
 

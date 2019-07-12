@@ -97,26 +97,20 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
 
 
 
-vector<vector<int>> Cube::gettropplaneZ(double zcoord, const Cube& cube){
+vector<vector<int>> Cube::gettropplaneZ(double zcoord) const {
   vector<vector<int>>tropplaneZ;
   cout<<"EMPTY PLANE CREATED\n";
-  for (int j=0;j<yrange;j++) {
+  for (int y=0;y<yrange;y++) {
     vector<int> vektori;
     tropplaneZ.push_back(vektori);
-    for (int i=0;i<xrange;i++){
-      trajectory traj(coord3d(i,j,zcoord),getvector(coord3d(i,j,zcoord)),0.01);
-      cout<<"\nNEW TRAJECTORY CREATED AT\t"<<i<<","<<j<<","<<zcoord<<"\n";
-      traj.complete(cube);
-      string filename = "new-";
-      filename.append(to_string(i));
-      filename.append("-");
-      filename.append(to_string(j));
-      filename.append("-");
-      filename.append(to_string(zcoord));
-      filename.append(".txt");
+    for (int x=0;x<xrange;x++){
+      trajectory traj(coord3d(x,y,zcoord),getvector(coord3d(x,y,zcoord)),0.01);
+      cout<<"\nNEW TRAJECTORY CREATED AT\t"<<x<<","<<y<<","<<zcoord<<"\n";
+      traj.complete(*this);
+      const string filename = "new-" + to_string(x) + "-" + to_string(y) + "-" + to_string_with_precision(zcoord) + ".txt";
       traj.write2mathematicalist(filename);
-      tropplaneZ[j].push_back(traj.classify(cube));
-      //tropplaneZ[j].push_back(1);
+      tropplaneZ[y].push_back(traj.classify(*this));
+      //tropplaneZ[y].push_back(1);
     }
   }
   return tropplaneZ;
