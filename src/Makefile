@@ -1,7 +1,7 @@
 
 CXX=g++
 
-FLAGS=-O2 -Wshadow -Wunused -std=c++14 -fPIC
+FLAGS=-O2 -Wshadow -Wunused -std=gnu++11 -fPIC
 PYTHON_INCLUDES_C=-I/usr/include/python3.7m
 
 HEADERS=geometry3.hh auxiliary.hh trajectory.hh cube.hh
@@ -16,10 +16,10 @@ build/%.o: %.cc $(HEADERS) Makefile
 	$(CXX) $(FLAGS) $(PYTHON_INCLUDES_C) -c $< -o $@
 
 main: $(OBJECTS_P) main.cc Makefile
-	$(CXX) $(OBJECTS_P) main.cc -o $@
+	$(CXX) $(FLAGS) $(OBJECTS_P) main.cc -o $@
 
 libtropicity.so: $(OBJECTS_P) $(OBJECTS_LIB_P) Makefile
-	$(CXX) -shared $(OBJECTS_P) $(OBJECTS_LIB_P) -o $@
+	$(CXX) $(FLAGS) -shared $(OBJECTS_P) $(OBJECTS_LIB_P) -o $@
 
 
 
