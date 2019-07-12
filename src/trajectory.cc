@@ -121,11 +121,16 @@ int trajectory::classify(const Cube& cube) const {
 
   if (oob==true) {return 0;}
 
-  for (int i = 1; i<directions.size(); i++){
-    crossum+=positions[i].cross(positions[i]-positions[i-1]);
-  }
+//  for (int i = 1; i<directions.size(); i++){                     <--- trying to improve this:
+//    crossum+=positions[i].cross(positions[i]-positions[i-1]);
+//  }
 
-  if (bfield.dot(crossum) < 0) { //clockwise
+  for (int i = 1; i<directions.size(); i++){
+    crossum+=positions[i-1].cross(positions[i]);
+  }
+  crossum+=positions[positions.size()-1].cross(positions[0]);
+
+  if (bfield.dot(crossum) < 0) { //clockwise                      <---- these classificatiosn are probably wrong
     return -1;
   }
   else if (bfield.dot(crossum) > 0) { //counter-clockwise
