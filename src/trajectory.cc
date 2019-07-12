@@ -75,7 +75,7 @@ void trajectory::complete(const Cube& cube){
 
 void trajectory::complete(const Cube& cube){
   int step = 0;
-  double dist2farthest = 0;
+  double dist2farthest = -1; //if this is set at 0 at declaration, the following while loop will never run
 
   cout<<"\tBEGINNING OF TRAJ-DRAWING!  positions[0]: "<<positions[0]<<"\n";
   while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest){ //if we get to a point that is less than a thousandth of the
