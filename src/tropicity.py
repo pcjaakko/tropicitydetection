@@ -21,18 +21,12 @@ def main():
     # signal.signal(signal.SIGINT, signal_handler)
     args = parseCommandline()
     print(args)
-    # print('init S:')
-    # print(args.source)
     C = tr.cube(args.inputfile)
-    # print(S)
-#    C = ap.canvas(args.out_filename, args.canvas_width, args.canvas_height)
-#    C.bucket_fill(100,100,100)
-#    C.render_scene(S)
-#    C.highlight_edges()
-##    C.draw_coast(S)
-#    C.annotate_peaks(S)
-##    C.annotate_islands(S)
-#    C.label_axis(S)
+
+    tropplane = C.gettropplaneZ(7.0)
+    filename = "new-tropicities.txt"
+    C.writetropplaneZ(filename, tropplane)
+
 
 if __name__ == "__main__":
     main()
