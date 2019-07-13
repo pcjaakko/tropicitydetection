@@ -10,7 +10,10 @@
 #include "cube.hh"
 #include "trajectory.hh"
 
+#include <chrono>
+
 using namespace std;
+using namespace std::chrono;
 
   
 Cube::Cube(string filename){
@@ -69,6 +72,7 @@ bool Cube::outofbounds (coord3d position) const {
 }
 
 coord3d Cube::getvector(coord3d position) const{ //linear interpolation
+	//how much time does this take??
   if (outofbounds(position)) {
     return coord3d(7777777,7777777,7777777);
   }
@@ -100,19 +104,31 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
 vector<vector<int>> Cube::gettropplaneZ(double zcoord) const {
   vector<vector<int>>tropplaneZ;
   cout<<"EMPTY PLANE CREATED\n";
+	//get time for whole plane?
+  steady_clock::time_point planestart = steady_clock::now();
   for (int y=0;y<yrange;y++) {
-    vector<int> vektori;
-    tropplaneZ.push_back(vektori);
+    vector<int> point_tropicity;
+    tropplaneZ.push_back(point_tropicity);
     for (int x=0;x<xrange;x++){
+	//get time for this trajectory
+      steady_clock::time_point trajstart = steady_clock::now();
       trajectory traj(coord3d(x,y,zcoord),getvector(coord3d(x,y,zcoord)),0.01);
       cout<<"\nNEW TRAJECTORY CREATED AT\t"<<x<<","<<y<<","<<zcoord<<"\n";
       traj.complete(*this);
       const string filename = "new-" + to_string(x) + "-" + to_string(y) + "-" + to_string_with_precision(zcoord) + ".txt";
       traj.write2mathematicalist(filename);
       tropplaneZ[y].push_back(traj.classify(*this));
-      //tropplaneZ[y].push_back(1);
+	//print time for this trajectory
+      steady_clock::time_point trajfinish = steady_clock::now();
+      duration<double> traj_span = duration_cast<duration<double>>(trajfinish-trajstart);
+      cout<<"It took "<<traj_span.count()<<" seconds to calculate the traj starting at point"<<x<<y<<zcoord<<"\n";
     }
   }
+	//print time for whole plane
+  steady_clock::time_point planefinish = steady_clock::now();
+  duration<double> plane_span = duration_cast<duration<double>>(planefinish-planestart);
+  cout<<"It took "<<plane_span.count()<<" seconds to calculate the whole plane.\n";
+  
   return tropplaneZ;
 }
 

@@ -7,8 +7,9 @@
 #include "geometry3.hh"
 #include "trajectory.hh"
 
+#include <chrono>
 using namespace std;
-
+using namespace std::chrono;
 
 
 void trajectory::extend_euler(const Cube& cube){  //Euler
@@ -19,7 +20,8 @@ void trajectory::extend_euler(const Cube& cube){  //Euler
 
 
 
-void trajectory::extend_rungekutta(const Cube& cube){ //Runge-Kutta
+/*
+  void trajectory::extend_rungekutta(const Cube& cube){ //Runge-Kutta without chrono debugging
   coord3d k1 = cube.getvector(positions[positions.size()-1]).normalised()*step_length;
   coord3d v1 = cube.getvector(positions[positions.size()-1]+k1*0.5);
   coord3d k2 = v1.normalised()*step_length;
@@ -31,12 +33,85 @@ void trajectory::extend_rungekutta(const Cube& cube){ //Runge-Kutta
   append(nextposition,cube.getvector(nextposition));  
 
 }
+*/
+
+void trajectory::extend_rungekutta(const Cube& cube){ //Runge-Kutta with chrono debugging
+	duration<double> getvector_span;
+	duration<double> rungekutta_span;
+
+  	steady_clock::time_point t1 = steady_clock::now();
+  coord3d c1 = positions[positions.size()-1];
+ 	 steady_clock::time_point t2 = steady_clock::now();
+  	rungekutta_span += duration_cast<duration<double>>(t2-t1); //<-- this is so crude :(
+
+ 	 t1 = steady_clock::now();
+  coord3d k1 = cube.getvector(c1);
+  	t2 = steady_clock::now();
+ 	 getvector_span += duration_cast<duration<double>>(t2-t1);
+  
+
+  	t1 = steady_clock::now();
+  k1 = k1.normalised()*step_length;
+  coord3d c2 = positions[positions.size()-1]+k1*0.5;
+  	t2 = steady_clock::now();
+  	rungekutta_span += duration_cast<duration<double>>(t2-t1);
+  
+  	t1 = steady_clock::now();
+  coord3d v1 = cube.getvector(c2);
+  	t2 = steady_clock::now();
+  	getvector_span += duration_cast<duration<double>>(t2-t1);
+
+ 
+  	t1 = steady_clock::now();
+  coord3d k2 = v1.normalised()*step_length;
+  coord3d c3 = positions[positions.size()-1]+k2*0.5;
+  	t2 = steady_clock::now();
+  	rungekutta_span += duration_cast<duration<double>>(t2-t1);
+
+  	t1 = steady_clock::now();
+  coord3d v2 = cube.getvector(c3);
+  	t2 = steady_clock::now();
+  	getvector_span += duration_cast<duration<double>>(t2-t1);
+
+  
+ 	 t1 = steady_clock::now();
+  coord3d k3 = v2.normalised()*step_length;
+  coord3d c4 = positions[positions.size()-1]+k3;
+ 	 t2 = steady_clock::now();
+ 	 rungekutta_span += duration_cast<duration<double>>(t2-t1);
+  
+	  t1 = steady_clock::now();
+  coord3d v3 = cube.getvector(c4);
+  	t2 = steady_clock::now();
+  	getvector_span += duration_cast<duration<double>>(t2-t1);
+  
+	  t1 = steady_clock::now();
+  coord3d k4 = v3.normalised()*step_length;
+  coord3d nextposition(positions[positions.size()-1]+(k1+k2*2.0+k3*2.0+k4)/6.0);
+ 	 t2 = steady_clock::now();
+ 	 rungekutta_span += duration_cast<duration<double>>(t2-t1);
+  
+	  t1 = steady_clock::now();
+  coord3d c5 = cube.getvector(nextposition);
+  	 t2 = steady_clock::now();
+ 	 getvector_span += duration_cast<duration<double>>(t2-t1);
+  
+  	t1 = steady_clock::now();
+  append(nextposition,c5);  
+ 	t2 = steady_clock::now();
+  	rungekutta_span += duration_cast<duration<double>>(t2-t1);
+
+	cout<<"\tRunge-Kutta took :o) "<<rungekutta_span.count()<<" seconds.\n";
+	cout<<"\tgetvector() took :o) "<<getvector_span.count()<<" seconds.\n\n";
+
+}
 
 void trajectory::printstatus(const Cube& cube){
-    cout <<fixed <<"position: "<<positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length;
-    cout <<"   vector before this: " << directions[positions.size()-1];
-    cout<<"\n";//cout << "veiictors: " << cube.getvector(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length)<<"\n"; 
-   
+
+cout <<fixed <<"position: "<<positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length;
+cout <<"   vector before this: " << directions[positions.size()-1];
+cout<<"\n";
+cout << "veiictors: " << cube.getvector(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length)<<"\n"; 
 } 
 /*
 void trajectory::complete(const Cube& cube){
@@ -78,14 +153,21 @@ void trajectory::complete(const Cube& cube){
   double dist2farthest = -1; //if this is set at 0 at declaration, the following while loop will never run
 
   cout<<"\tBEGINNING OF TRAJ-DRAWING!  positions[0]: "<<positions[0]<<"\n";
-  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest){ //if we get to a point that is less than a thousandth of the
-    printstatus(cube);
-    cout<<dist2farthest<<"\t\tdist2farthest\t";
-    cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdist\n";
-    cout<<"    step_length***"<<step_length<<"";
+		//duration<double> rk_span;
+		//duration<double> getvector_span;
+  while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest){ //if we get to a point that is less than SOME WELL-GUESSED FRACTION of the longest distance in the trajectory
+    //printstatus(cube);
+    //cout<<dist2farthest<<"\t\tdist2farthest\t";
+    //cout<<(positions[positions.size()-1]-positions[0]).norm()<<"\t\tcurrentdist\n";
+    //cout<<"    step_length***"<<step_length<<"";
+		//steady_clock::time_point rkstart = steady_clock::now();
     extend_rungekutta(cube);
+		//steady_clock::time_point rkend = steady_clock::now();
+		//rk_span += duration_cast<duration<double>>(rkend-rkstart);
+
     step++;
     
+		//steady_clock::time_point getvector_start = steady_clock::now();
     if (cube.outofbounds(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length)){
       cout<<"OUT OF BOUNDS! t. trajectory.cc\n";
       oob = true;
@@ -97,8 +179,8 @@ void trajectory::complete(const Cube& cube){
     }
 
     if (step>10000){ //a single trajectory must not be more than this many steps
-      cout<<"we at "<<positions[0]<<",\t with step_length "<<step_length<<"\n";
-      cout<<"resetting traj and increasing step_length...\n";
+      //cout<<"we at "<<positions[0]<<",\t with step_length "<<step_length<<"\n";
+      //cout<<"resetting traj and increasing step_length...\n";
       step=0;
       step_length+=2;
       int size = positions.size();
@@ -107,10 +189,17 @@ void trajectory::complete(const Cube& cube){
         directions.pop_back();
       }
       dist2farthest = -1;
-      cout<<"reset done. possize: "<<positions.size()<<" dirsize: "<<directions.size()<<"\n";
-      cout<<"reset done. poos0:   "<<positions[positions.size()-1]<<" dir0:    "<<directions[directions.size()-1]<<"\n";
+      //cout<<"reset done. possize: "<<positions.size()<<" dirsize: "<<directions.size()<<"\n";
+      //cout<<"reset done. poos0:   "<<positions[positions.size()-1]<<" dir0:    "<<directions[directions.size()-1]<<"\n";
     }
+		//steady_clock::time_point getvector_end = steady_clock::now();
+		//getvector_span += duration_cast<duration<double>>(getvector_end-getvector_start);
   }
+	/*cout<<"\t ending traj-drawing...\n";
+	cout<<"\t\tRunge-Kutta took a total of "<<rk_span.count()<<" seconds.\n";
+	cout<<"\t\tGettin vecs took a total of "<<getvector_span.count()<<" seconds.\n";*/
+   //print time spent on extending with runge-kutta
+   //print total time spent on doing interpolations
 }
       
 

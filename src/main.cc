@@ -6,7 +6,10 @@
 #include "trajectory.hh"
 #include "cube.hh"
 
+#include <chrono>
+
 using namespace std;
+using namespace std::chrono;
 
 int main () {
 
@@ -17,16 +20,15 @@ int main () {
 	for (int i=0;i<tropplane.size();i++){
 		cout<<tropplane[i]<<"\n";
 	}	
-	string filename="new-tropicities.txt";
+	string filename="tallinn-tropicities.txt";
 	cube.writetropplaneZ(filename,tropplane);
 //*/
 /*	
 	coord3d positionA(11,8,7);
 	trajectory traj(positionA,cube.getvector(positionA),0.1);
 	traj.complete(cube);
-	traj.write2mathematicalist("newtraj.txt");
+	traj.write2mathematicalist("tallinntraj.txt");
 	cout <<"classification: "<<traj.classify(cube); 
 */
-
 	return 0;
 }
