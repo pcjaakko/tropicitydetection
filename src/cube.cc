@@ -5,6 +5,8 @@
 #include <iterator>
 #include <regex>
 #include <cmath>
+#include <unistd.h>
+#include <sys/stat.h>
 
 #include "geometry3.hh"
 #include "cube.hh"
@@ -27,6 +29,9 @@ Cube::Cube(string filename){
   regex imagedata("<ImageData");
   fstream vti (filename);
   string vtiline;
+  if(!vti.good()){
+    cout<<"Input file '"<<filename<<"' was not found.\n";
+  }
 
   while (getline (vti, vtiline)) {
     if (inblock == 1) {
