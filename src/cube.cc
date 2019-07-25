@@ -104,37 +104,122 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
   return sumvec/normsum;
 }
 
-
+coord3d Cube::getvector3(coord3d position) const{
+  return coord3d(0,0,0);
+}
 
 vector<vector<int>> Cube::gettropplaneZ(double zcoord) const {
   vector<vector<int>>tropplaneZ;
-  //cout<<"EMPTY PLANE CREATED\n";
-	//get time for whole plane?
-  steady_clock::time_point planestart = steady_clock::now();
   for (int y=0;y<yrange;y++) {
     vector<int> point_tropicity;
     tropplaneZ.push_back(point_tropicity);
     for (int x=0;x<xrange;x++){
-	//get time for this trajectory
-      steady_clock::time_point trajstart = steady_clock::now();
       trajectory traj(coord3d(x,y,zcoord),getvector(coord3d(x,y,zcoord)),0.01);
       cout<<"\nNEW TRAJECTORY CREATED AT\t"<<x<<","<<y<<","<<zcoord<<"\n";
       traj.complete(*this);
       const string filename = "new-" + to_string(x) + "-" + to_string(y) + "-" + to_string_with_precision(zcoord) + ".txt";
       traj.write2mathematicalist(filename);
       tropplaneZ[y].push_back(traj.classify(*this, 4));
-	//print time for this trajectory
-      steady_clock::time_point trajfinish = steady_clock::now();
-      duration<double> traj_span = duration_cast<duration<double>>(trajfinish-trajstart);
-      //cout<<"It took "<<traj_span.count()<<" seconds to calculate the traj starting at point"<<x<<y<<zcoord<<"\n";
     }
   }
-	//print time for whole plane
-  steady_clock::time_point planefinish = steady_clock::now();
-  duration<double> plane_span = duration_cast<duration<double>>(planefinish-planestart);
-  //cout<<"It took "<<plane_span.count()<<" seconds to calculate the whole plane.\n";
-  
   return tropplaneZ;
+}
+
+void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
+
+  vector<coord3d> gridpoints;
+  vector<double> gridweights;
+  vector<coord3d> isopoints;
+  vector<double> isoweights;
+  vector<coord3d> parapoints;
+  vector<double> paraweights;
+  vector<coord3d> zeropoints;
+  vector<double> zeroweights;
+
+  vector <string> stringgridpoints;
+  fstream grid (gridfile);
+  string gridline;
+  if(!grid.good()) { cout<<"Gridfile '"<<gridfile<<"' was not found.\n"; }
+  while (getline (grid, gridline)) {
+    stringgridpoints.push_back(gridline);
+    istringstream gss(gridline);
+    vector<string> gridresults((istream_iterator<string>(gss)),istream_iterator<string>());
+    coord3d doublegridresults(stod(gridresults[0]),stod(gridresults[1]),stod(gridresults[2]));
+    gridpoints.push_back(doublegridresults); 
+  }
+
+  vector <string> stringgridweights;
+  fstream weights (weightfile);
+  string weightsline;
+  if(!weights.good()) { cout<<"Weightfile '"<<gridfile<<"' was not found.\n"; }
+  while (getline (weights, weightsline)) {
+    stringgridweights.push_back(weightsline);
+    istringstream wss(weightsline);
+    vector<string> weightsresults((istream_iterator<string>(wss)),istream_iterator<string>());
+    gridweights.push_back(stod(weightsresults[0])); 
+  }
+
+//we now have the gridpoints in vector<coord3d> gridpoints and the corresponding weights in vector<double> gridweights
+//next: get tropicity at each point, then write out two gridfiles
+
+  for(int i=0;i<gridpoints.size();i++){
+    trajectory traj(gridpoints[i],getvector(gridpoints[i]),0.01);
+    traj.complete(*this);
+    int classification = traj.classify(*this, bfielddir);
+    if (classification==-1){
+      isopoints.push_back(gridpoints[i]);
+      isoweights.push_back(gridweights[i]);
+    } else if (classification==1){
+      parapoints.push_back(gridpoints[i]);
+      paraweights.push_back(gridweights[i]);
+    } else if (classification==0){
+      zeropoints.push_back(gridpoints[i]);
+      zeroweights.push_back(gridweights[i]);
+    } else {
+      cout<<"couldn't classify this point :o(\n";
+    }
+  }
+//now write iso, para and zero points and weights to respective files
+  ofstream isopout, isowout, parapout, parawout, zeropout, zerowout;
+  ostringstream isopoutfile;
+  isopoutfile << gridfile << "-isotropic";
+  isopout.open(isopoutfile.str());
+  for (int i=0;i<isopoints.size();i++) {
+    isopout<<isopoints[i][0]<<"\t"<<isopoints[i][1]<<"\t"<<isopoints[i][2]<<"\n";  
+  }
+  ostringstream isowoutfile;
+  isowoutfile << weightfile << "-isotropic";
+  isowout.open(isowoutfile.str());
+  for (int i=0;i<isoweights.size();i++) {
+    isowout<<isoweights[i]<<"\n";  
+  }
+
+  ostringstream parapoutfile;
+  parapoutfile << gridfile << "-paratropic";
+  parapout.open(parapoutfile.str());
+  for (int i=0;i<parapoints.size();i++) {
+    parapout<<parapoints[i][0]<<"\t"<<parapoints[i][1]<<"\t"<<parapoints[i][2]<<"\n";  
+  }
+  ostringstream parawoutfile;
+  parawoutfile << weightfile << "-paratropic";
+  parawout.open(parawoutfile.str());
+  for (int i=0;i<paraweights.size();i++) {
+    parawout<<paraweights[i]<<"\n";  
+  }
+
+  ostringstream zeropoutfile;
+  zeropoutfile << gridfile << "-zerotropic";
+  zeropout.open(zeropoutfile.str());
+  for (int i=0;i<zeropoints.size();i++) {
+    zeropout<<zeropoints[i][0]<<"\t"<<zeropoints[i][1]<<"\t"<<zeropoints[i][2]<<"\n";  
+  }
+  ostringstream zerowoutfile;
+  zerowoutfile << weightfile << "-zerotropic";
+  zerowout.open(zerowoutfile.str());
+  for (int i=0;i<zeroweights.size();i++) {
+    zerowout<<zeroweights[i]<<"\n";  
+  }
+//the file-writing code above is a bit crude
 }
 
 
@@ -208,4 +293,6 @@ void Cube::writetropplane(string filename, vector<vector<int>> tropicities) cons
     outputfile<<"\n";
   }
   outputfile<<"}";
-} 
+}
+ 
+

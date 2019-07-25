@@ -32,9 +32,11 @@ class Cube {
   Cube(string filename);
   vector<vector<int>> gettropplaneZ(double zcoord) const;
   vector<vector<int>> gettropplane(string filename, int bfielddir, int fixeddir, double fixedcoord) const;
+  void splitgrid(string gridfile, string weightfile, int bfielddir) const;
   void writetropplane(string filename, vector<vector<int>> tropicities) const;
   void writecube(const string& filename) const;
   coord3d getvector(coord3d position) const;
+  coord3d getvector3(coord3d position) const;
   bool outofbounds (coord3d position) const; 
 };
 
