@@ -89,7 +89,7 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
     for (int y=0; y<2; ++y) {
       for (int x=0; x<2; ++x) {
         norm = (coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z)-position).norm();
-        if (norm == 0.0) {
+        if (norm == 0.0) { // lnw: it doesn't matter too much here, but in general it's dangerous to test for the equality with a double (because floating point inaccuracies).  The normal solution is eps=..., if( abs(norm) < eps ), where epsilon is chosen appropriately
         ////cout << "listindex: " <<fixed<<position[2]*xrange*yrange+position[1]*xrange+position[0] << "location at index: " <<  "\n"; 
         ////cout << field[position[2]*xrange*yrange+position[1]*xrange+position[0]] << "is the field at " << position << "\n";
           return field[position[2]*xrange*yrange+position[1]*xrange+position[0]];
@@ -127,6 +127,7 @@ vector<vector<int>> Cube::gettropplaneZ(double zcoord) const {
 
 void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 
+// lnw: could you define/explain what each of those are?
   vector<coord3d> gridpoints;
   vector<double> gridweights;
   vector<coord3d> isopoints;
@@ -141,7 +142,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   string gridline;
   if(!grid.good()) { cout<<"Gridfile '"<<gridfile<<"' was not found.\n"; }
   while (getline (grid, gridline)) {
-    stringgridpoints.push_back(gridline);
+    stringgridpoints.push_back(gridline); // lnw: there's something wrong here, stringgridpoints is never used
     istringstream gss(gridline);
     vector<string> gridresults((istream_iterator<string>(gss)),istream_iterator<string>());
     coord3d doublegridresults(stod(gridresults[0]),stod(gridresults[1]),stod(gridresults[2]));
@@ -153,7 +154,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   string weightsline;
   if(!weights.good()) { cout<<"Weightfile '"<<gridfile<<"' was not found.\n"; }
   while (getline (weights, weightsline)) {
-    stringgridweights.push_back(weightsline);
+    stringgridweights.push_back(weightsline); // lnw: same here
     istringstream wss(weightsline);
     vector<string> weightsresults((istream_iterator<string>(wss)),istream_iterator<string>());
     gridweights.push_back(stod(weightsresults[0])); 
@@ -176,7 +177,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
       zeropoints.push_back(gridpoints[i]);
       zeroweights.push_back(gridweights[i]);
     } else {
-      cout<<"couldn't classify this point :o(\n";
+      cout<<"couldn't classify this point :o(\n"; // lnw: you mean, could neither classify nor not classify this point?
     }
   }
 //now write iso, para and zero points and weights to respective files
@@ -219,7 +220,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   for (int i=0;i<zeroweights.size();i++) {
     zerowout<<zeroweights[i]<<"\n";  
   }
-//the file-writing code above is a bit crude
+//the file-writing code above is a bit crude // lnw: it might be a good idea to close all files, otherwise I don't see a problem.
 }
 
 

@@ -253,13 +253,14 @@ int trajectory::classify(const Cube& cube, int bfielddir) const {
   }
   crossum+=positions[positions.size()-1].cross(positions[0]);
 
+// lnw: classical (=diatropic) is clockwise
   if (bfield.dot(crossum) < 0) { //clockwise                      <---- can't remember which is actually counterclockwise, but one of them surely is 
     return -1;
   }
   else if (bfield.dot(crossum) > 0) { //counter-clockwise
     return 1;
   }
-  else {                         //neither. something happened
+  else {                         //neither. something happened  // lnw: I suppose that never happens?
     return 2;
   }
 
