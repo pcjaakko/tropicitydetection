@@ -34,7 +34,7 @@ int main (int argc, char **argv) {
       cout<<"3: Fixed coord axis:\n\t0 for x,\n\t1 for y,\n\t2 for z.\n";
       cout<<"4: Fixed coord coordinate as a double. (For example 6.7 or 2.3e2)\n";
       cout<<"5: Output filename\n";
-      cout<<"Example: ./main ../QZVPPDh2te-m06-2x.vti 4 2 6.7 output.txt\n";
+      cout<<"Example: ./main gettropplane ../QZVPPDh2te-m06-2x.vti 4 2 6.7 output.txt\n";
       return 7;
     }
 
@@ -66,9 +66,9 @@ int main (int argc, char **argv) {
 //---------------above this line we're checking that the arguments are OK
     
     
-    Cube cube(argv[1]);
-    vector<vector<int>> tropplane = cube.gettropplane(argv[5], stoi(argv[2]), stoi(argv[3]), stod(argv[4]));
-    cube.writetropplane(argv[5],tropplane);
+    Cube cube(argv[2]);
+    vector<vector<int>> tropplane = cube.gettropplane(argv[6], stoi(argv[3]), stoi(argv[4]), stod(argv[5]));
+    cube.writetropplane(argv[6],tropplane);
     return 0;
   } else if (strcmp(command,"splitgrid") == 0) {  //run gridsplitter
 
@@ -78,7 +78,7 @@ int main (int argc, char **argv) {
       cout<<"2: Magnetic field direction:\n\t0 for x, 1 for -x,\n\t2 for y, 3 for -y,\n\t4 for z, 5 for -z,\n";
       cout<<"3: Gridfile filename\n";
       cout<<"4: Weightfile filename\n";
-      cout<<"Example: ./main ../QZVPPDh2te-m06-2x.vti 4 ../grid4h2te ../weights4h2te\n";
+      cout<<"Example: splitgrid ./main ../QZVPPDh2te-m06-2x.vti 4 ../grid4h2te ../weights4h2te\n";
       cout<<"The output will be 'gridfile-isotropic', 'weightfile-isotropic', etc...\n";
       return 7;
     } 

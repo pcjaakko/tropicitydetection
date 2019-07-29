@@ -253,14 +253,13 @@ int trajectory::classify(const Cube& cube, int bfielddir) const {
   }
   crossum+=positions[positions.size()-1].cross(positions[0]);
 
-// lnw: classical (=diatropic) is clockwise
-  if (bfield.dot(crossum) < 0) { //clockwise                      <---- can't remember which is actually counterclockwise, but one of them surely is 
+  if (bfield.dot(crossum) < 0) { //counter-clockwise (paratropic) 
     return -1;
   }
-  else if (bfield.dot(crossum) > 0) { //counter-clockwise
+  else if (bfield.dot(crossum) > 0) { //clockwise (diatropic)
     return 1;
   }
-  else {                         //neither. something happened  // lnw: I suppose that never happens?
+  else {                         //neither. something happened  // lnw: I suppose that never happens? // jaakko: i would also suppose that never happens, but in an _arbitary_ vector field such a trajectory could exist.
     return 2;
   }
 

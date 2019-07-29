@@ -79,7 +79,7 @@ bool Cube::outofbounds (coord3d position) const {
 coord3d Cube::getvector(coord3d position) const{ //linear interpolation
 	//how much time does this take??
   if (outofbounds(position)) {
-    return coord3d(7777777,7777777,7777777);
+    return coord3d(7,7,7);
   }
   coord3d intpos((int)position[0],(int)position[1],(int)position[2]);
   coord3d sumvec(0,0,0);
@@ -128,33 +128,29 @@ vector<vector<int>> Cube::gettropplaneZ(double zcoord) const {
 void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 
 // lnw: could you define/explain what each of those are?
-  vector<coord3d> gridpoints;
-  vector<double> gridweights;
-  vector<coord3d> isopoints;
-  vector<double> isoweights;
-  vector<coord3d> parapoints;
-  vector<double> paraweights;
-  vector<coord3d> zeropoints;
-  vector<double> zeroweights;
+  vector<coord3d> gridpoints; //coordinates from the grid input file are read into this vector
+  vector<double> gridweights; //weights from the weight input file are read into this vector
+  vector<coord3d> isopoints;  //coordinates that were classified as isotropic are written into this vector
+  vector<double> isoweights;  //and corresponding weights into this vector
+  vector<coord3d> parapoints; //coordinates that were classified as paratropic are written into this vector
+  vector<double> paraweights; //and corresponding weights into this vector
+  vector<coord3d> zeropoints; //if a coordinate couldn't be classified (trajectory got out of bounds), it is written into this vector
+  vector<double> zeroweights; //and the corresponding weight into this vector
 
-  vector <string> stringgridpoints;
   fstream grid (gridfile);
   string gridline;
   if(!grid.good()) { cout<<"Gridfile '"<<gridfile<<"' was not found.\n"; }
   while (getline (grid, gridline)) {
-    stringgridpoints.push_back(gridline); // lnw: there's something wrong here, stringgridpoints is never used
     istringstream gss(gridline);
     vector<string> gridresults((istream_iterator<string>(gss)),istream_iterator<string>());
     coord3d doublegridresults(stod(gridresults[0]),stod(gridresults[1]),stod(gridresults[2]));
     gridpoints.push_back(doublegridresults); 
   }
 
-  vector <string> stringgridweights;
   fstream weights (weightfile);
   string weightsline;
   if(!weights.good()) { cout<<"Weightfile '"<<gridfile<<"' was not found.\n"; }
   while (getline (weights, weightsline)) {
-    stringgridweights.push_back(weightsline); // lnw: same here
     istringstream wss(weightsline);
     vector<string> weightsresults((istream_iterator<string>(wss)),istream_iterator<string>());
     gridweights.push_back(stod(weightsresults[0])); 
@@ -177,7 +173,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
       zeropoints.push_back(gridpoints[i]);
       zeroweights.push_back(gridweights[i]);
     } else {
-      cout<<"couldn't classify this point :o(\n"; // lnw: you mean, could neither classify nor not classify this point?
+      cout<<"couldn't classify this point :o(\n"; // lnw: you mean, could neither classify nor not classify this point? // jaakko: see trajectory.cc line 263: in case a trajectory is completed but its curvature is zero, trajectory::classify returns 2.
     }
   }
 //now write iso, para and zero points and weights to respective files
@@ -188,12 +184,14 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   for (int i=0;i<isopoints.size();i++) {
     isopout<<isopoints[i][0]<<"\t"<<isopoints[i][1]<<"\t"<<isopoints[i][2]<<"\n";  
   }
+  isopout.close();
   ostringstream isowoutfile;
   isowoutfile << weightfile << "-isotropic";
   isowout.open(isowoutfile.str());
   for (int i=0;i<isoweights.size();i++) {
     isowout<<isoweights[i]<<"\n";  
   }
+  isowout.close();
 
   ostringstream parapoutfile;
   parapoutfile << gridfile << "-paratropic";
@@ -201,12 +199,14 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   for (int i=0;i<parapoints.size();i++) {
     parapout<<parapoints[i][0]<<"\t"<<parapoints[i][1]<<"\t"<<parapoints[i][2]<<"\n";  
   }
+  parapout.close();
   ostringstream parawoutfile;
   parawoutfile << weightfile << "-paratropic";
   parawout.open(parawoutfile.str());
   for (int i=0;i<paraweights.size();i++) {
     parawout<<paraweights[i]<<"\n";  
   }
+  parawout.close();
 
   ostringstream zeropoutfile;
   zeropoutfile << gridfile << "-zerotropic";
@@ -214,13 +214,14 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   for (int i=0;i<zeropoints.size();i++) {
     zeropout<<zeropoints[i][0]<<"\t"<<zeropoints[i][1]<<"\t"<<zeropoints[i][2]<<"\n";  
   }
+  zeropout.close();
   ostringstream zerowoutfile;
   zerowoutfile << weightfile << "-zerotropic";
   zerowout.open(zerowoutfile.str());
   for (int i=0;i<zeroweights.size();i++) {
     zerowout<<zeroweights[i]<<"\n";  
   }
-//the file-writing code above is a bit crude // lnw: it might be a good idea to close all files, otherwise I don't see a problem.
+  zerowout.close();
 }
 
 
