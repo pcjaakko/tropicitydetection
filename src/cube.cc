@@ -157,6 +157,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 
   for(int i=0;i<gridpoints.size();i++){
     trajectory traj(gridpoints[i],getvector(gridpoints[i]),0.01);
+        cout<<"\nNEW TRAJECTORY CREATED AT\t"<<gridpoints[i]<<"\n";
     traj.complete(*this);
     int classification = traj.classify(*this, bfielddir);
     if (classification==-1){
