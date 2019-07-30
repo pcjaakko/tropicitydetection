@@ -78,7 +78,7 @@ int main (int argc, char **argv) {
       cout<<"2: Magnetic field direction:\n\t0 for x, 1 for -x,\n\t2 for y, 3 for -y,\n\t4 for z, 5 for -z,\n";
       cout<<"3: Gridfile filename\n";
       cout<<"4: Weightfile filename\n";
-      cout<<"Example: splitgrid ./main ../QZVPPDh2te-m06-2x.vti 4 ../grid4h2te ../weights4h2te\n";
+      cout<<"Example: ./main splitgrid ../QZVPPDh2te-m06-2x.vti 4 ../grid4h2te ../weights4h2te\n";
       cout<<"The output will be 'gridfile-isotropic', 'weightfile-isotropic', etc...\n";
       return 7;
     } 
@@ -92,7 +92,6 @@ int main (int argc, char **argv) {
       cout<<"Entered value was: "<<argv[3]<<"\n";
       return 7;
     }
-
     Cube cube(argv[2]);
     cube.splitgrid(argv[4],argv[5],stoi(argv[3]));
     return 0;

@@ -19,8 +19,8 @@ using namespace std::chrono;
 
   
 Cube::Cube(string filename){
-
   vector <string> coordinates;
+  regex redata("[0-9]E");
   regex reblockstart("<DataArray");
   regex reblockend("</DataArray");
   smatch match;
@@ -33,8 +33,7 @@ Cube::Cube(string filename){
   }
 
   while (getline (vti, vtiline)) {
-    if (inblock == 1) {
-      ////cout << vtiline<<":o)\n";
+    if (inblock == 1 && regex_search(vtiline, match, redata)) {
       coordinates.push_back(vtiline);
       istringstream iss(vtiline);
       vector<string> results((istream_iterator<string>(iss)),istream_iterator<string>());
