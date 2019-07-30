@@ -38,13 +38,13 @@ int main (int argc, char **argv) {
       return 7;
     }
 
-    try { double dubbel = stod(argv[5]); }
+    try { double fixedcoord = stod(argv[5]); }
     catch(invalid_argument) { cout<<"The fixed coordinate '"<<argv[5]<<"' was not a double in desired format.\n"; errorsfound = true; }
     
-    try { int integer1 = stoi(argv[3]); }
+    try { int bfielddir = stoi(argv[3]); }
     catch(invalid_argument) { cout<<"The magnetic field direction '"<<argv[3]<<"' was not an integer in desired format.\n"; errorsfound = true; }
     
-    try { int integer2 = stoi(argv[4]); }
+    try { int fixedcoordaxis = stoi(argv[4]); }
     catch(invalid_argument) { cout<<"The coord axis '"<<argv[4]<<"' was not an integer in desired format.\n"; errorsfound = true; }
     
     if (stoi(argv[3])<0 || stoi(argv[3])>5){

@@ -149,6 +149,9 @@ void trajectory::complete(const Cube& cube){
 */
 
 void trajectory::complete(const Cube& cube){
+  const double threshold = 1e-2;
+  if (directions[0].norm() < threshold) {oob=true; return;} //if the intensity is vero low, don't bother completing. classify as "oob"
+
   int step = 0;
   double dist2farthest = -1; //if this is set at 0 at declaration, the following while loop will never run
 

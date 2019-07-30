@@ -21,7 +21,6 @@ using namespace std::chrono;
 Cube::Cube(string filename){
 
   vector <string> coordinates;
-  regex redata("[0-9]E");
   regex reblockstart("<DataArray");
   regex reblockend("</DataArray");
   smatch match;
@@ -35,14 +34,12 @@ Cube::Cube(string filename){
 
   while (getline (vti, vtiline)) {
     if (inblock == 1) {
-      if (regex_search(vtiline, match, redata)) {
-        ////cout << vtiline<<":o)\n";
-        coordinates.push_back(vtiline);
-        istringstream iss(vtiline);
-        vector<string> results((istream_iterator<string>(iss)),istream_iterator<string>());
-        coord3d doubleresults(stod(results[0]),stod(results[1]),stod(results[2]));
-        field.push_back(doubleresults);
-      }
+      ////cout << vtiline<<":o)\n";
+      coordinates.push_back(vtiline);
+      istringstream iss(vtiline);
+      vector<string> results((istream_iterator<string>(iss)),istream_iterator<string>());
+      coord3d doubleresults(stod(results[0]),stod(results[1]),stod(results[2]));
+      field.push_back(doubleresults);
     }
     if (regex_search(vtiline, match, reblockstart)) {
       inblock = 1;
@@ -89,7 +86,7 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
     for (int y=0; y<2; ++y) {
       for (int x=0; x<2; ++x) {
         norm = (coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z)-position).norm();
-        if (norm == 0.0) { // lnw: it doesn't matter too much here, but in general it's dangerous to test for the equality with a double (because floating point inaccuracies).  The normal solution is eps=..., if( abs(norm) < eps ), where epsilon is chosen appropriately
+        if (norm < 1e-12) { // lnw: it doesn't matter too much here, but in general it's dangerous to test for the equality with a double (because floating point inaccuracies).  The normal solution is eps=..., if( abs(norm) < eps ), where epsilon is chosen appropriately
         ////cout << "listindex: " <<fixed<<position[2]*xrange*yrange+position[1]*xrange+position[0] << "location at index: " <<  "\n"; 
         ////cout << field[position[2]*xrange*yrange+position[1]*xrange+position[0]] << "is the field at " << position << "\n";
           return field[position[2]*xrange*yrange+position[1]*xrange+position[0]];
