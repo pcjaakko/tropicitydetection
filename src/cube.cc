@@ -169,7 +169,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
       ssoweights.push_back(sridweights[i]);
     } else if (classification==1){
       sarapoints.push_back(sridpoints[i]);
-      saraweights.push_back(sridpoints[i]);
+      saraweights.push_back(sridweights[i]);
     } else if (classification==0){
       seropoints.push_back(sridpoints[i]);
       seroweights.push_back(sridweights[i]);
