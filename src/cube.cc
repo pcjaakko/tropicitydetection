@@ -161,7 +161,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 
   for(int i=0;i<gridpoints.size();i++){
     trajectory traj(gridpoints[i],getvector(gridpoints[i]),0.01);
-        cout<<"\nNEW TRAJECTORY CREATED AT\t"<<gridpoints[i]<<"\n";
+        //cout<<"\nNEW TRAJECTORY CREATED AT\t"<<gridpoints[i]<<"\n";
     traj.complete(*this);
     int classification = traj.classify(*this, bfielddir);
     if (classification==-1){
@@ -235,7 +235,7 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
     tropplane.push_back(point_tropicity);
       for (int x=0;x<xrange;x++){
         trajectory traj(coord3d(x,y,fixedcoord),getvector(coord3d(x,y,fixedcoord)),0.01);
-        cout<<"\nNEW TRAJECTORY CREATED AT\t"<<x<<","<<y<<","<<fixedcoord<<"\n";
+        //cout<<"\nNEW TRAJECTORY CREATED AT\t"<<x<<","<<y<<","<<fixedcoord<<"\n";
         traj.complete(*this);
       //const string filename = "new-" + to_string(x) + "-" + to_string(y) + "-" + to_string_with_precision(zcoord) + ".txt";
       //traj.write2mathematicalist(filename);
