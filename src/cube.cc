@@ -126,12 +126,14 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 // lnw: could you define/explain what each of those are?
   vector<coord3d> gridpoints; //coordinates from the grid input file are read into this vector
   vector<double> gridweights; //weights from the weight input file are read into this vector
-  vector<coord3d> isopoints;  //coordinates that were classified as isotropic are written into this vector
-  vector<double> isoweights;  //and corresponding weights into this vector
-  vector<coord3d> parapoints; //coordinates that were classified as paratropic are written into this vector
-  vector<double> paraweights; //and corresponding weights into this vector
-  vector<coord3d> zeropoints; //if a coordinate couldn't be classified (trajectory got out of bounds), it is written into this vector
-  vector<double> zeroweights; //and the corresponding weight into this vector
+  vector<string> sridpoints; //coordinates from the grid input file are read into this vector
+  vector<string> sridweights; //weights from the weight input file are read into this vector
+  vector<string> ssopoints;  //coordinates that were classified as isotropic are written into this vector
+  vector<string> ssoweights;  //and corresponding weights into this vector
+  vector<string> sarapoints; //coordinates that were classified as paratropic are written into this vector
+  vector<string> saraweights; //and corresponding weights into this vector
+  vector<string> seropoints; //if a coordinate couldn't be classified (trajectory got out of bounds), it is written into this vector
+  vector<string> seroweights; //and the corresponding weight into this vector
 
   fstream grid (gridfile);
   string gridline;
@@ -141,6 +143,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
     vector<string> gridresults((istream_iterator<string>(gss)),istream_iterator<string>());
     coord3d doublegridresults(stod(gridresults[0]),stod(gridresults[1]),stod(gridresults[2]));
     gridpoints.push_back(doublegridresults); 
+    sridpoints.push_back(gridline);
   }
 
   fstream weights (weightfile);
@@ -150,6 +153,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
     istringstream wss(weightsline);
     vector<string> weightsresults((istream_iterator<string>(wss)),istream_iterator<string>());
     gridweights.push_back(stod(weightsresults[0])); 
+    sridweights.push_back(weightsline);
   }
 
 //we now have the gridpoints in vector<coord3d> gridpoints and the corresponding weights in vector<double> gridweights
@@ -161,14 +165,14 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
     traj.complete(*this);
     int classification = traj.classify(*this, bfielddir);
     if (classification==-1){
-      isopoints.push_back(gridpoints[i]);
-      isoweights.push_back(gridweights[i]);
+      ssopoints.push_back(sridpoints[i]);
+      ssoweights.push_back(sridweights[i]);
     } else if (classification==1){
-      parapoints.push_back(gridpoints[i]);
-      paraweights.push_back(gridweights[i]);
+      sarapoints.push_back(sridpoints[i]);
+      saraweights.push_back(sridpoints[i]);
     } else if (classification==0){
-      zeropoints.push_back(gridpoints[i]);
-      zeroweights.push_back(gridweights[i]);
+      seropoints.push_back(sridpoints[i]);
+      seroweights.push_back(sridweights[i]);
     } else {
       cout<<"couldn't classify this point :o(\n"; // lnw: you mean, could neither classify nor not classify this point? // jaakko: see trajectory.cc line 263: in case a trajectory is completed but its curvature is zero, trajectory::classify returns 2.
     }
@@ -178,45 +182,45 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   ostringstream isopoutfile;
   isopoutfile << gridfile << "-isotropic";
   isopout.open(isopoutfile.str());
-  for (int i=0;i<isopoints.size();i++) {
-    isopout<<isopoints[i][0]<<"\t"<<isopoints[i][1]<<"\t"<<isopoints[i][2]<<"\n";  
+  for (int i=0;i<ssopoints.size();i++) {
+    isopout<<ssopoints[i]<<"\n";
   }
   isopout.close();
   ostringstream isowoutfile;
   isowoutfile << weightfile << "-isotropic";
   isowout.open(isowoutfile.str());
-  for (int i=0;i<isoweights.size();i++) {
-    isowout<<isoweights[i]<<"\n";  
+  for (int i=0;i<ssoweights.size();i++) {
+    isowout<<ssoweights[i]<<"\n";
   }
   isowout.close();
 
   ostringstream parapoutfile;
   parapoutfile << gridfile << "-paratropic";
   parapout.open(parapoutfile.str());
-  for (int i=0;i<parapoints.size();i++) {
-    parapout<<parapoints[i][0]<<"\t"<<parapoints[i][1]<<"\t"<<parapoints[i][2]<<"\n";  
+  for (int i=0;i<sarapoints.size();i++) {
+    parapout<<sarapoints[i]<<"\n";
   }
   parapout.close();
   ostringstream parawoutfile;
   parawoutfile << weightfile << "-paratropic";
   parawout.open(parawoutfile.str());
-  for (int i=0;i<paraweights.size();i++) {
-    parawout<<paraweights[i]<<"\n";  
+  for (int i=0;i<saraweights.size();i++) {
+    parawout<<saraweights[i]<<"\n";  
   }
   parawout.close();
 
   ostringstream zeropoutfile;
   zeropoutfile << gridfile << "-zerotropic";
   zeropout.open(zeropoutfile.str());
-  for (int i=0;i<zeropoints.size();i++) {
-    zeropout<<zeropoints[i][0]<<"\t"<<zeropoints[i][1]<<"\t"<<zeropoints[i][2]<<"\n";  
+  for (int i=0;i<seropoints.size();i++) {
+    zeropout<<seropoints[i]<<"\n";  
   }
   zeropout.close();
   ostringstream zerowoutfile;
   zerowoutfile << weightfile << "-zerotropic";
   zerowout.open(zerowoutfile.str());
-  for (int i=0;i<zeroweights.size();i++) {
-    zerowout<<zeroweights[i]<<"\n";  
+  for (int i=0;i<seroweights.size();i++) {
+    zerowout<<seroweights[i]<<"\n";  
   }
   zerowout.close();
 }
