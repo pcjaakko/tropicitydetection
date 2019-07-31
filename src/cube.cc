@@ -147,7 +147,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   while (getline (grid, gridline)) {
     istringstream gss(gridline);
     vector<string> gridresults((istream_iterator<string>(gss)),istream_iterator<string>());
-    coord3d doublegridresults(stod(gridresults[0])*spacing[0]+origin[0],stod(gridresults[1])*spacing[1]+origin[1],stod(gridresults[2])*spacing[2]+origin[2]);
+    coord3d doublegridresults(stod(gridresults[0])/spacing[0]-origin[0],stod(gridresults[1])/spacing[1]-origin[1],stod(gridresults[2])/spacing[2]-origin[2]);
     gridpoints.push_back(doublegridresults); 
     sridpoints.push_back(gridline);
   }
