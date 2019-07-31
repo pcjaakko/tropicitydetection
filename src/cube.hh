@@ -25,6 +25,8 @@ class Cube {
   int xrange;
   int yrange;
   int zrange;
+  vector<double> origin;
+  vector<double> spacing;
 
 
   public:
