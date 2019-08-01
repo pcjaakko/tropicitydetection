@@ -95,6 +95,14 @@ int main (int argc, char **argv) {
     Cube cube(argv[2]);
     cube.splitgrid(argv[4],argv[5],stoi(argv[3]));
     return 0;
+  } else if (strcmp(command,"traj") == 0) {
+    Cube cube(argv[2]);
+    coord3d point((stod(argv[3])-cube.origin[0])/cube.spacing[0],(stod(argv[4])-cube.origin[1])/cube.spacing[1],(stod(argv[5])-cube.origin[2])/cube.spacing[2]);
+    trajectory traj(point, cube.getvector(point), 0.01);
+    traj.complete(cube);
+    traj.write2mathematicalist("traj.txt");
+    cout<<"\nclassification: "<<traj.classify(cube, 4)<<"\n";
+    return 0;
   } else {
     cout<<"Command not recognized. List of available commands:\n\tgettropplane\n\tsplitgrid\n";
     return 7;

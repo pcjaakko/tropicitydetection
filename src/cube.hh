@@ -25,11 +25,11 @@ class Cube {
   int xrange;
   int yrange;
   int zrange;
-  vector<double> origin;
-  vector<double> spacing;
 
 
   public:
+  vector<double> origin;
+  vector<double> spacing;
   void testfunc();
   Cube(string filename);
   vector<vector<int>> gettropplaneZ(double zcoord) const;
