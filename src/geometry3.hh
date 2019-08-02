@@ -40,8 +40,13 @@ struct coord3d {
   }
   double dot(const coord3d& y) const { return x[0]*y[0]+x[1]*y[1]+x[2]*y[2]; }
   double norm() const { return sqrt(dot(*this)); }
+  //double norm() const { return sqrt(abs(dot(*this))); }
 
-  coord3d normalised() const {return *this/norm();}
+  coord3d normalised() const {
+    const double normi = norm();
+    if (normi==0) {return coord3d(0,0,0);}
+    else {return *this/norm();}
+  }
 
   double& operator[](const unsigned int i){ return x[i]; }
   double  operator[](const unsigned int i) const { return x[i]; }
