@@ -140,6 +140,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   vector<string> saraweights; //and corresponding weights into this vector
   vector<string> seropoints; //if a coordinate couldn't be classified (trajectory got out of bounds), it is written into this vector
   vector<string> seroweights; //and the corresponding weight into this vector
+  vector<string> serointensities;
 
   fstream grid (gridfile);
   string gridline;
@@ -180,12 +181,17 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
     } else if (classification==0){
       seropoints.push_back(sridpoints[i]);
       seroweights.push_back(sridweights[i]);
+      //serointensities.push_back(to_string(getvector(gridpoints[i]).norm()));
+      //serointensities.push_back(getvector(gridpoints[i]));
+      ostringstream vectr;
+      vectr<<to_string(getvector(gridpoints[i])[0])<<","<<to_string(getvector(gridpoints[i])[2])<<","<<to_string(getvector(gridpoints[i])[2]);
+      serointensities.push_back(vectr.str());
     } else {
       cout<<"couldn't classify this point :o(\n"; // lnw: you mean, could neither classify nor not classify this point? // jaakko: see trajectory.cc line 263: in case a trajectory is completed but its curvature is zero, trajectory::classify returns 2.
     }
   }
 //now write iso, para and zero points and weights to respective files
-  ofstream isopout, isowout, parapout, parawout, zeropout, zerowout;
+  ofstream isopout, isowout, parapout, parawout, zeropout, zerowout, zeroint;
   ostringstream isopoutfile;
   isopoutfile << gridfile << "-isotropic";
   isopout.open(isopoutfile.str());
@@ -230,6 +236,11 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
     zerowout<<seroweights[i]<<"\n";  
   }
   zerowout.close();
+  zeroint.open("zerointensities.txt");
+  for (int i=0;i<serointensities.size();i++){
+    zeroint<<serointensities[i]<<"\n";
+  }
+  
 }
 
 
