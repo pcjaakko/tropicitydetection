@@ -7,9 +7,7 @@
 #include "geometry3.hh"
 #include "trajectory.hh"
 
-//#include <chrono>
 using namespace std;
-//using namespace std::chrono;
 
 
 void trajectory::extend_euler(const Cube& cube){  //Euler
@@ -20,90 +18,23 @@ void trajectory::extend_euler(const Cube& cube){  //Euler
 
 
 
-/*
-  void trajectory::extend_rungekutta(const Cube& cube){ //Runge-Kutta without chrono debugging
-  coord3d k1 = cube.getvector(positions[positions.size()-1]).normalised()*step_length;
-  coord3d v1 = cube.getvector(positions[positions.size()-1]+k1*0.5);
-  coord3d k2 = v1.normalised()*step_length;
-  coord3d v2 = cube.getvector(positions[positions.size()-1]+k2*0.5);
-  coord3d k3 = v2.normalised()*step_length;
-  coord3d v3 = cube.getvector(positions[positions.size()-1]+k3);
-  coord3d k4 = v3.normalised()*step_length;
-  coord3d nextposition(positions[positions.size()-1]+(k1+k2*2.0+k3*2.0+k4)/6.0);
-  append(nextposition,cube.getvector(nextposition));  
 
-}
-*/
-
-void trajectory::extend_rungekutta(const Cube& cube){ //Runge-Kutta with chrono debugging
-	//duration<double> getvector_span;
-	//duration<double> rungekutta_span;
-
-  	//steady_clock::time_point t1 = steady_clock::now();
+void trajectory::extend_rungekutta(const Cube& cube){ 
   coord3d c1 = positions[positions.size()-1];
- 	 //steady_clock::time_point t2 = steady_clock::now();
-  	//rungekutta_span += duration_cast<duration<double>>(t2-t1); //<-- this is so crude :(
-
- 	 //t1 = steady_clock::now();
   coord3d k1 = cube.getvector(c1);
-  //	t2 = steady_clock::now();
- //	 getvector_span += duration_cast<duration<double>>(t2-t1);
-  
-
-  //	t1 = steady_clock::now();
   k1 = k1.normalised()*step_length;
   coord3d c2 = positions[positions.size()-1]+k1*0.5;
-  //	t2 = steady_clock::now();
-  //	rungekutta_span += duration_cast<duration<double>>(t2-t1);
-  
-  //	t1 = steady_clock::now();
   coord3d v1 = cube.getvector(c2);
-  //	t2 = steady_clock::now();
-  //	getvector_span += duration_cast<duration<double>>(t2-t1);
-
- 
-  //	t1 = steady_clock::now();
   coord3d k2 = v1.normalised()*step_length;
   coord3d c3 = positions[positions.size()-1]+k2*0.5;
-  //	t2 = steady_clock::now();
-  //	rungekutta_span += duration_cast<duration<double>>(t2-t1);
-
-  //	t1 = steady_clock::now();
   coord3d v2 = cube.getvector(c3);
-  //	t2 = steady_clock::now();
-  //	getvector_span += duration_cast<duration<double>>(t2-t1);
-
-  
- //	 t1 = steady_clock::now();
   coord3d k3 = v2.normalised()*step_length;
   coord3d c4 = positions[positions.size()-1]+k3;
- //	 t2 = steady_clock::now();
- //	 rungekutta_span += duration_cast<duration<double>>(t2-t1);
-  
-//	  t1 = steady_clock::now();
   coord3d v3 = cube.getvector(c4);
-  //	t2 = steady_clock::now();
-  //	getvector_span += duration_cast<duration<double>>(t2-t1);
-  
-//	  t1 = steady_clock::now();
   coord3d k4 = v3.normalised()*step_length;
   coord3d nextposition(positions[positions.size()-1]+(k1+k2*2.0+k3*2.0+k4)/6.0);
- //	 t2 = steady_clock::now();
- //	 rungekutta_span += duration_cast<duration<double>>(t2-t1);
-  
-//	  t1 = steady_clock::now();
   coord3d c5 = cube.getvector(nextposition);
-  //	 t2 = steady_clock::now();
- //	 getvector_span += duration_cast<duration<double>>(t2-t1);
-  
-  //	t1 = steady_clock::now();
   append(nextposition,c5);  
- //	t2 = steady_clock::now();
-  //	rungekutta_span += duration_cast<duration<double>>(t2-t1);
-
-	//cout<<"\tRunge-Kutta took :o) "<<rungekutta_span.count()<<" seconds.\n";
-	//cout<<"\tgetvector() took :o) "<<getvector_span.count()<<" seconds.\n\n";
-
 }
 
 void trajectory::printstatus(const Cube& cube){

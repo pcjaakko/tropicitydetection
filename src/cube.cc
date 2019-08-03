@@ -12,10 +12,8 @@
 #include "cube.hh"
 #include "trajectory.hh"
 
-#include <chrono>
 
 using namespace std;
-using namespace std::chrono;
 
   
 Cube::Cube(string filename){
@@ -69,7 +67,7 @@ void Cube::writecube(const string& filename) const {
 
 
 void Cube::testfunc(){
-  //cout<<"TESTING HARD\n";
+  cout<<"TESTING HARD\n";
 }
 bool Cube::outofbounds (coord3d position) const {
   if (position[0]>xrange || position[1]>yrange || position[2]>zrange || position[0]<0 || position[1]<0 || position[2]<0) {
@@ -79,7 +77,6 @@ bool Cube::outofbounds (coord3d position) const {
 }
 
 coord3d Cube::getvector(coord3d position) const{ //linear interpolation
-	//how much time does this take??
   if (outofbounds(position)) {
     return coord3d(7,7,7);
   }
@@ -106,8 +103,8 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
   return sumvec/normsum;
 }
 
-coord3d Cube::getvector3(coord3d position) const{
-  return coord3d(0,0,0);
+coord3d Cube::getvector3(coord3d position) const{ //skeleton function for tricubic interpolation
+  return coord3d(7,7,7);
 }
 
 vector<vector<int>> Cube::gettropplaneZ(double zcoord) const {
@@ -140,7 +137,8 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   vector<string> saraweights; //and corresponding weights into this vector
   vector<string> seropoints; //if a coordinate couldn't be classified (trajectory got out of bounds), it is written into this vector
   vector<string> seroweights; //and the corresponding weight into this vector
-  vector<string> serointensities;
+  vector<string> serointensities; // if a coordinate couldn't be classified, the vector at that coord will be written here.
+				// lets one check for convergence
 
   fstream grid (gridfile);
   string gridline;
@@ -187,7 +185,14 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
       vectr<<to_string(getvector(gridpoints[i])[0])<<","<<to_string(getvector(gridpoints[i])[2])<<","<<to_string(getvector(gridpoints[i])[2]);
       serointensities.push_back(vectr.str());
     } else {
-      cout<<"couldn't classify this point :o(\n"; // lnw: you mean, could neither classify nor not classify this point? // jaakko: see trajectory.cc line 263: in case a trajectory is completed but its curvature is zero, trajectory::classify returns 2.
+      seropoints.push_back(sridpoints[i]);
+      seroweights.push_back(sridweights[i]);
+      ostringstream vectr;
+      vectr<<to_string(getvector(gridpoints[i])[0])<<","<<to_string(getvector(gridpoints[i])[1])<<","<<to_string(getvector(gridpoints[i])[2]);
+      vectr<<"\t@\t"<<sridpoints[i];
+      serointensities.push_back(vectr.str());
+      //cout<<"couldn't classify this point :o(\n"; // lnw: you mean, could neither classify nor not classify this point? // jaakko: see trajectory.cc line 263: in case a trajectory is completed but its curvature is zero, trajectory::classify returns 2.
+	//jaakko: this happens for example when the length of a vector is so close to zero that the length between to points is zero at double precision
     }
   }
 //now write iso, para and zero points and weights to respective files
