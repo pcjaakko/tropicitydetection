@@ -62,7 +62,7 @@ Cube::Cube(string filename){
 
 
 void Cube::writecube(const string& filename) const {
-  //cout << "File-writing has not yet been implemented. " << filename << "\n";
+  cout << "File-writing has not yet been implemented. " << filename << "\n";
 }
 
 
@@ -89,13 +89,10 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
       for (int x=0; x<2; ++x) {
         norm = (coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z)-position).norm();
         if (norm < 1e-12) { // lnw: it doesn't matter too much here, but in general it's dangerous to test for the equality with a double (because floating point inaccuracies).  The normal solution is eps=..., if( abs(norm) < eps ), where epsilon is chosen appropriately
-        ////cout << "listindex: " <<fixed<<position[2]*xrange*yrange+position[1]*xrange+position[0] << "location at index: " <<  "\n"; 
-        ////cout << field[position[2]*xrange*yrange+position[1]*xrange+position[0]] << "is the field at " << position << "\n";
           return field[position[2]*xrange*yrange+position[1]*xrange+position[0]];
         }
         normsum += 1.0/norm;
         sumvec += field[(intpos[2]+z)*xrange*yrange+(intpos[1]+y)*xrange+intpos[0]+x]/norm;
-        ////cout << field[(intpos[2]+z)*xrange*yrange+(intpos[1]+y)*xrange+intpos[0]+x] << "is the field at {" <<intpos[0]+x<<","<<intpos[1]+y<<","<<intpos[2]+z<<"}" << "\n";
         }
       }
     }
@@ -179,8 +176,6 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
     } else if (classification==0){
       seropoints.push_back(sridpoints[i]);
       seroweights.push_back(sridweights[i]);
-      //serointensities.push_back(to_string(getvector(gridpoints[i]).norm()));
-      //serointensities.push_back(getvector(gridpoints[i]));
       ostringstream vectr;
       vectr<<to_string(getvector(gridpoints[i])[0])<<","<<to_string(getvector(gridpoints[i])[2])<<","<<to_string(getvector(gridpoints[i])[2]);
       serointensities.push_back(vectr.str());
@@ -258,10 +253,7 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
     tropplane.push_back(point_tropicity);
       for (int x=0;x<xrange;x++){
         trajectory traj(coord3d(x,y,fixedcoord),getvector(coord3d(x,y,fixedcoord)),0.01);
-        //cout<<"\nNEW TRAJECTORY CREATED AT\t"<<x<<","<<y<<","<<fixedcoord<<"\n";
         traj.complete(*this);
-      //const string filename = "new-" + to_string(x) + "-" + to_string(y) + "-" + to_string_with_precision(zcoord) + ".txt";
-      //traj.write2mathematicalist(filename);
         tropplane[y].push_back(traj.classify(*this, bfielddir));
       }
     }
@@ -276,8 +268,6 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
         trajectory traj(coord3d(x,fixedcoord,z),getvector(coord3d(x,fixedcoord,z)),0.01);
         cout<<"\nNEW TRAJECTORY CREATED AT\t"<<x<<","<<fixedcoord<<","<<z<<"\n";
         traj.complete(*this);
-      //const string filename = "new-" + to_string(x) + "-" + to_string(y) + "-" + to_string_with_precision(zcoord) + ".txt";
-      //traj.write2mathematicalist(filename);
         tropplane[z].push_back(traj.classify(*this, bfielddir));
       }
     }
@@ -292,8 +282,6 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
         trajectory traj(coord3d(fixedcoord,y,z),getvector(coord3d(fixedcoord,y,z)),0.01);
         cout<<"\nNEW TRAJECTORY CREATED AT\t"<<fixedcoord<<","<<y<<","<<z<<"\n";
         traj.complete(*this);
-      //const string filename = "new-" + to_string(x) + "-" + to_string(y) + "-" + to_string_with_precision(zcoord) + ".txt";
-      //traj.write2mathematicalist(filename);
         tropplane[y].push_back(traj.classify(*this, bfielddir));
       }
     }

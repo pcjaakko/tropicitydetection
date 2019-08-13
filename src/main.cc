@@ -93,7 +93,8 @@ int main (int argc, char **argv) {
     Cube cube(argv[2]);
     cube.splitgrid(argv[4],argv[5],stoi(argv[3]));
     return 0;
-  } else if (strcmp(command,"traj") == 0) {
+  } else if (strcmp(command,"traj") == 0) { //this gets the trajectory at a given point and outputs it in a format that can be visualized in Mathematica
+ //no command line argument error handling has been implemented yet, but one can pretty much copy-paste that from above
     Cube cube(argv[2]);
     coord3d point((stod(argv[3])-cube.origin[0])/cube.spacing[0],(stod(argv[4])-cube.origin[1])/cube.spacing[1],(stod(argv[5])-cube.origin[2])/cube.spacing[2]);
     trajectory traj(point, cube.getvector(point), 0.01);
