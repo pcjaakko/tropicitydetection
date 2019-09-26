@@ -128,7 +128,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
   vector<double> gridweights; //weights from the weight input file are read into this vector
   vector<string> sridpoints; //coordinates from the grid input file are read into this vector
   vector<string> sridweights; //weights from the weight input file are read into this vector
-  vector<string> ssopoints;  //coordinates that were classified as isotropic are written into this vector
+  vector<string> ssopoints;  //coordinates that were classified as diatropic are written into this vector
   vector<string> ssoweights;  //and corresponding weights into this vector
   vector<string> sarapoints; //coordinates that were classified as paratropic are written into this vector
   vector<string> saraweights; //and corresponding weights into this vector
@@ -190,22 +190,22 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 	//jaakko: this happens for example when the length of a vector is so close to zero that the length between to points is zero at double precision
     }
   }
-//now write iso, para and zero points and weights to respective files
-  ofstream isopout, isowout, parapout, parawout, zeropout, zerowout, zeroint;
-  ostringstream isopoutfile;
-  isopoutfile << gridfile << "-isotropic";
-  isopout.open(isopoutfile.str());
+//now write dia, para and zero points and weights to respective files
+  ofstream diapout, diawout, parapout, parawout, zeropout, zerowout, zeroint;
+  ostringstream diapoutfile;
+  diapoutfile << gridfile << "-diatropic";
+  diapout.open(diapoutfile.str());
   for (int i=0;i<ssopoints.size();i++) {
-    isopout<<ssopoints[i]<<"\n";
+    diapout<<ssopoints[i]<<"\n";
   }
-  isopout.close();
-  ostringstream isowoutfile;
-  isowoutfile << weightfile << "-isotropic";
-  isowout.open(isowoutfile.str());
+  diapout.close();
+  ostringstream diawoutfile;
+  diawoutfile << weightfile << "-diatropic";
+  diawout.open(diawoutfile.str());
   for (int i=0;i<ssoweights.size();i++) {
-    isowout<<ssoweights[i]<<"\n";
+    diawout<<ssoweights[i]<<"\n";
   }
-  isowout.close();
+  diawout.close();
 
   ostringstream parapoutfile;
   parapoutfile << gridfile << "-paratropic";
@@ -246,12 +246,15 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 
 vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixeddir, double fixedcoord) const {
   vector<vector<int>>tropplane;
-
   if (fixeddir==2) {
+  fixedcoord = (fixedcoord-origin[1])/spacing[1];
     for (int y=0;y<yrange;y++) {
+    cout<<"y = "<<y<<"/"<<yrange<<endl;
     vector<int> point_tropicity;
     tropplane.push_back(point_tropicity);
       for (int x=0;x<xrange;x++){
+
+  /// fixedcoord should probably be scaled at the very first line of this function!
         trajectory traj(coord3d(x,y,fixedcoord),getvector(coord3d(x,y,fixedcoord)),0.01);
         traj.complete(*this);
         tropplane[y].push_back(traj.classify(*this, bfielddir));
@@ -262,6 +265,7 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
  
   else if (fixeddir==1) {
     for (int z=0;z<zrange;z++) {
+    cout<<"z = "<<z<<"/"<<zrange<<endl;
     vector<int> point_tropicity;
     tropplane.push_back(point_tropicity);
       for (int x=0;x<xrange;x++){
@@ -276,6 +280,7 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
 
   else if (fixeddir==0) {
     for (int y=0;y<yrange;y++) {
+    cout<<"y = "<<y<<"/"<<yrange<<endl;
     vector<int> point_tropicity;
     tropplane.push_back(point_tropicity);
       for (int z=0;z<zrange;z++){

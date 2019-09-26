@@ -15,7 +15,7 @@ int main (int argc, char **argv) {
 
   if (argc==1) {
     cout<<"This program needs a command as the first argument.\nList of available commands:\n";
-    cout<<"\tsplitgrid: split an integration grid file into the iso- and paratropic parts.\n";
+    cout<<"\tsplitgrid: split an integration grid file into the dia- and paratropic parts.\n";
     cout<<"\tgettropplane: get the tropicities of points in a plane perpendicular to either the x, y or z axis.\n";
     cout<<"Run the program without other parameters than the command for operation manual.\n";
     return 7;
@@ -77,7 +77,7 @@ int main (int argc, char **argv) {
       cout<<"3: Gridfile filename\n";
       cout<<"4: Weightfile filename\n";
       cout<<"Example: ./main splitgrid ../QZVPPDh2te-m06-2x.vti 4 ../grid4h2te ../weights4h2te\n";
-      cout<<"The output will be 'gridfile-isotropic', 'weightfile-isotropic', etc...\n";
+      cout<<"The output will be 'gridfile-diatropic', 'weightfile-diatropic', etc...\n";
       return 7;
     } 
 
