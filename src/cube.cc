@@ -104,23 +104,6 @@ coord3d Cube::getvector3(coord3d position) const{ //skeleton function for tricub
   return coord3d(7,7,7);
 }
 
-vector<vector<int>> Cube::gettropplaneZ(double zcoord) const {
-  vector<vector<int>>tropplaneZ;
-  for (int y=0;y<yrange;y++) {
-    vector<int> point_tropicity;
-    tropplaneZ.push_back(point_tropicity);
-    for (int x=0;x<xrange;x++){
-      trajectory traj(coord3d(x,y,zcoord),getvector(coord3d(x,y,zcoord)),0.01);
-      cout<<"\nNEW TRAJECTORY CREATED AT\t"<<x<<","<<y<<","<<zcoord<<"\n";
-      traj.complete(*this);
-      const string filename = "new-" + to_string(x) + "-" + to_string(y) + "-" + to_string_with_precision(zcoord) + ".txt";
-      traj.write2mathematicalist(filename);
-      tropplaneZ[y].push_back(traj.classify(*this, 4));
-    }
-  }
-  return tropplaneZ;
-}
-
 void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 
 // lnw: could you define/explain what each of those are?
@@ -245,6 +228,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 
 
 vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixeddir, double fixedcoord) const {
+  double steplength = 0.01;
   vector<vector<int>>tropplane;
   if (fixeddir==2) {
   fixedcoord = (fixedcoord-origin[1])/spacing[1];
@@ -253,9 +237,8 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
     vector<int> point_tropicity;
     tropplane.push_back(point_tropicity);
       for (int x=0;x<xrange;x++){
-
   /// fixedcoord should probably be scaled at the very first line of this function!
-        trajectory traj(coord3d(x,y,fixedcoord),getvector(coord3d(x,y,fixedcoord)),0.01);
+        trajectory traj(coord3d(x,y,fixedcoord),getvector(coord3d(x,y,fixedcoord)),steplength);
         traj.complete(*this);
         tropplane[y].push_back(traj.classify(*this, bfielddir));
       }
@@ -269,8 +252,7 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
     vector<int> point_tropicity;
     tropplane.push_back(point_tropicity);
       for (int x=0;x<xrange;x++){
-        trajectory traj(coord3d(x,fixedcoord,z),getvector(coord3d(x,fixedcoord,z)),0.01);
-        cout<<"\nNEW TRAJECTORY CREATED AT\t"<<x<<","<<fixedcoord<<","<<z<<"\n";
+        trajectory traj(coord3d(x,fixedcoord,z),getvector(coord3d(x,fixedcoord,z)),steplength);
         traj.complete(*this);
         tropplane[z].push_back(traj.classify(*this, bfielddir));
       }
@@ -284,8 +266,7 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
     vector<int> point_tropicity;
     tropplane.push_back(point_tropicity);
       for (int z=0;z<zrange;z++){
-        trajectory traj(coord3d(fixedcoord,y,z),getvector(coord3d(fixedcoord,y,z)),0.01);
-        cout<<"\nNEW TRAJECTORY CREATED AT\t"<<fixedcoord<<","<<y<<","<<z<<"\n";
+        trajectory traj(coord3d(fixedcoord,y,z),getvector(coord3d(fixedcoord,y,z)),steplength);
         traj.complete(*this);
         tropplane[y].push_back(traj.classify(*this, bfielddir));
       }

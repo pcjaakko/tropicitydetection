@@ -18,7 +18,9 @@ void trajectory::extend_euler(const Cube& cube){  //Euler
 
 
 
-
+// the numbers in extend-rungekutta are not magic numbers. (check wikipedia article for runge-kutta method).
+// any other numbers (like "10000" or "0.05" are probably magic numbers.
+// beware
 void trajectory::extend_rungekutta(const Cube& cube){ 
   coord3d c1 = positions[positions.size()-1];
   coord3d k1 = cube.getvector(c1);
