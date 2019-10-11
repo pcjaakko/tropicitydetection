@@ -61,14 +61,15 @@ Cube::Cube(string filename){
 }
 
 
-void Cube::writecube(const string& filename) const {
-  cout << "File-writing has not yet been implemented. " << filename << "\n";
+void Cube::writecube(const string& filename) const { //what even is the point of this function
+  cout << "File-writing has not yet been implemented. " << filename << "\n"; //to rewrite the .vti file in some other crappier format??
 }
 
 
-void Cube::testfunc(){
-  cout<<"TESTING HARD\n";
+void Cube::testfunc(){ //what
+  cout<<"TESTING HARD\n"; 
 }
+
 bool Cube::outofbounds (coord3d position) const {
   if (position[0]>xrange || position[1]>yrange || position[2]>zrange || position[0]<0 || position[1]<0 || position[2]<0) {
     return true;
@@ -78,7 +79,7 @@ bool Cube::outofbounds (coord3d position) const {
 
 coord3d Cube::getvector(coord3d position) const{ //linear interpolation
   if (outofbounds(position)) {
-    return coord3d(7,7,7);
+    return coord3d(7,7,7); //someone could write a list of these undocumented errorcodes?
   }
   coord3d intpos((int)position[0],(int)position[1],(int)position[2]);
   coord3d sumvec(0,0,0);
@@ -88,7 +89,7 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
     for (int y=0; y<2; ++y) {
       for (int x=0; x<2; ++x) {
         norm = (coord3d(intpos[0]+x,intpos[1]+y,intpos[2]+z)-position).norm();
-        if (norm < 1e-12) { // lnw: it doesn't matter too much here, but in general it's dangerous to test for the equality with a double (because floating point inaccuracies).  The normal solution is eps=..., if( abs(norm) < eps ), where epsilon is chosen appropriately
+        if (norm < 1e-12) { //magic number 1e-12: not checking form norm=0 because of floating point inaccuracy
           return field[position[2]*xrange*yrange+position[1]*xrange+position[0]];
         }
         normsum += 1.0/norm;
@@ -101,7 +102,7 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
 }
 
 coord3d Cube::getvector3(coord3d position) const{ //skeleton function for tricubic interpolation
-  return coord3d(7,7,7);
+  return coord3d(7,7,7);			//later on we figured out that it's probably more expensive to use tricubic interpolation than to make up for the linear one by increasing grid resolution
 }
 
 void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
@@ -232,12 +233,12 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
   vector<vector<int>>tropplane;
   if (fixeddir==2) {
   fixedcoord = (fixedcoord-origin[1])/spacing[1];
+  /// fixedcoord should probably be scaled (according to the .vti header (the gimic outputfile spacing)) at the very first line of this function!
     for (int y=0;y<yrange;y++) {
     cout<<"y = "<<y<<"/"<<yrange<<endl;
     vector<int> point_tropicity;
     tropplane.push_back(point_tropicity);
       for (int x=0;x<xrange;x++){
-  /// fixedcoord should probably be scaled at the very first line of this function!
         trajectory traj(coord3d(x,y,fixedcoord),getvector(coord3d(x,y,fixedcoord)),steplength);
         traj.complete(*this);
         tropplane[y].push_back(traj.classify(*this, bfielddir));

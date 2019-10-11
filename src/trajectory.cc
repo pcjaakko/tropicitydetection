@@ -18,7 +18,7 @@ void trajectory::extend_euler(const Cube& cube){  //Euler
 
 
 
-// the numbers in extend-rungekutta are not magic numbers. (check wikipedia article for runge-kutta method).
+// the numbers in extend-rungekutta are not magic numbers. (see wikipedia article for runge-kutta method).
 // any other numbers (like "10000" or "0.05" are probably magic numbers.
 // beware
 void trajectory::extend_rungekutta(const Cube& cube){ 
@@ -46,13 +46,15 @@ void trajectory::printstatus(const Cube& cube){
 void trajectory::complete(const Cube& cube){
   //const double threshold = 1e-2;
   //if (directions[0].norm() < threshold) {oob=true; return;} //if the intensity is vero low, don't bother completing. classify as "oob"
+  //the above is commented out because i didn't figure out what would be a good value for this threshold
+  //if someone does, this would probably save some computational time
   step_length=cube.spacing[0]*0.05;
 
   int step = 0;
   double dist2farthest = -1; //if this is set at 0 at declaration, the following while loop will never run
 
   while ((positions[positions.size()-1]-positions[0]).norm()>0.2*dist2farthest){ //if we get to a point that is less than SOME WELL-GUESSED FRACTION (1/5) of the longest distance in the trajectory
-    extend_rungekutta(cube);
+    extend_rungekutta(cube);							//(looking back on this this cant be very effective... maybe the next summer worker can come up with a computationally cheaper alternative)
     step++;
     if (cube.outofbounds(positions[positions.size()-1]+directions[directions.size()-1].normalised()*step_length)){
       oob = true;
@@ -67,8 +69,8 @@ void trajectory::complete(const Cube& cube){
       step=0;
       step_length+=2;
       int size = positions.size();
-      for (int a=0;a<size-1;a++){
-        positions.pop_back();
+      for (int a=0;a<size-1;a++){ //also this can't be very effective, there must be a way to wipe the positions and directions lists and create new blanks ones that is cheaper than this
+        positions.pop_back();     
         directions.pop_back();
       }
       dist2farthest = -1;
@@ -133,7 +135,7 @@ int trajectory::classify(const Cube& cube, int bfielddir) const {
   else if (bfield.dot(crossum) > 0) { //clockwise (diatropic)
     return 1;
   }
-  else {                         //neither. something happened  // lnw: I suppose that never happens? // jaakko: i would also suppose that never happens, but in an _arbitary_ vector field such a trajectory could exist.
+  else {                         //neither. something happened  // lnw: I suppose that never happens? // jaakko: i would also suppose that never happens, but in an _arbitrary_ vector field such a trajectory could exist.
     return 2;
   }
 
