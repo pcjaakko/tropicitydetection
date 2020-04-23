@@ -81,6 +81,69 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
   if (outofbounds(position)) {
     return coord3d(7,7,7); //someone could write a list of these undocumented errorcodes?
   }
+//lnw implementation ported by Jaakko -- the below code puts all the gridpoints in the zerotropic file
+//the individual trajs are just lines
+/*
+  double x = position[0];
+  double y = position[1];
+  double z = position[2];
+  int x0 = int(floor(position[0]));
+  int x1 = x0 + 1;
+  int y0 = int(floor(position[1]));
+  int y1 = y0 + 1;
+  int z0 = int(floor(position[2]));
+  int z1 = z0 + 1;
+  coord3d v000 = coord3d(z0, y0, x0);
+  coord3d v001 = coord3d(z0, y0, x1);
+  coord3d v010 = coord3d(z0, y1, x0);
+  coord3d v011 = coord3d(z0, y1, x1);
+  coord3d v100 = coord3d(z1, y0, x0);
+  coord3d v101 = coord3d(z1, y0, x1);
+  coord3d v110 = coord3d(z1, y1, x0);
+  coord3d v111 = coord3d(z1, y1, x1);
+  coord3d aux0 = ((double)x1 - x) * v000 + (x - (double)x0) * v001;
+  coord3d aux1 = ((double)x1 - x) * v010 + (x - (double)x0) * v011;
+  coord3d aux2 = ((double)x1 - x) * v100 + (x - (double)x0) * v101;
+  coord3d aux3 = ((double)x1 - x) * v110 + (x - (double)x0) * v111;
+  coord3d aux4 = ((double)y1 - y) * aux0 + (y - (double)y0) * aux1;
+  coord3d aux5 = ((double)y1 - y) * aux2 + (y - (double)y0) * aux3;
+  coord3d res = ((double)z1 - z) * aux4 + (z - (double)z0) * aux5;
+  return res;
+*/
+//lnw implementation - original
+//does not compile, gives error
+//cube.cc:123:36: error: no match for call to ‘(const Cube) (int&, int&, int&)’
+//coord3d v000 = (*this)(z0, y0, x0);
+/*
+  double x = position[0];
+  double y = position[1];
+  double z = position[2];
+  int x0 = int(floor(position[0]));
+  int x1 = x0 + 1;
+  int y0 = int(floor(position[1]));
+  int y1 = y0 + 1;
+  int z0 = int(floor(position[2]));
+  int z1 = z0 + 1;
+  coord3d v000 = (*this)(z0, y0, x0);
+  coord3d v001 = (*this)(z0, y0, x1);
+  coord3d v010 = (*this)(z0, y1, x0);
+  coord3d v011 = (*this)(z0, y1, x1);
+  coord3d v100 = (*this)(z1, y0, x0);
+  coord3d v101 = (*this)(z1, y0, x1);
+  coord3d v110 = (*this)(z1, y1, x0);
+  coord3d v111 = (*this)(z1, y1, x1);
+  coord3d aux0 = (x1 - x) * v000 + (x - x0) * v001;
+  coord3d aux1 = (x1 - x) * v010 + (x - x0) * v011;
+  coord3d aux2 = (x1 - x) * v100 + (x - x0) * v101;
+  coord3d aux3 = (x1 - x) * v110 + (x - x0) * v111;
+  coord3d aux4 = (y1 - y) * aux0 + (y - y0) * aux1;
+  coord3d aux5 = (y1 - y) * aux2 + (y - y0) * aux3;
+  coord3d res = (z1 - z) * aux4 + (z - z0) * aux5;
+  return res;
+*/
+
+//the below pyykko2 implementation gives reasonable, but slightly wrong
+/*
   coord3d intpos((int)position[0],(int)position[1],(int)position[2]);
   coord3d sumvec(0,0,0);
   double normsum = 0;
@@ -99,6 +162,25 @@ coord3d Cube::getvector(coord3d position) const{ //linear interpolation
     }
 
   return sumvec/normsum;
+*/
+//method copied from wikipedia https://en.wikipedia.org/wiki/Trilinear_interpolation
+//works 
+  coord3d intpos((int)position[0],(int)position[1],(int)position[2]);
+
+  double xd = (position[0]-intpos[0]);
+  double yd = (position[1]-intpos[1]);
+  double zd = (position[2]-intpos[2]);
+  
+  coord3d c00 = field[intpos[2]*xrange*yrange+intpos[1]*xrange+position[0]] * (1.0 - xd) + field[intpos[2]*xrange*yrange+intpos[1]*xrange+(position[0]+1)] * xd;
+  coord3d c01 = field[(intpos[2]+1)*xrange*yrange+intpos[1]*xrange+position[0]] * (1.0 - xd) + field[(intpos[2]+1)*xrange*yrange+intpos[1]*xrange+(position[0]+1)] * xd;
+  coord3d c10 = field[intpos[2]*xrange*yrange+(intpos[1]+1)*xrange+position[0]] * (1.0 - xd) + field[intpos[2]*xrange*yrange+(intpos[1]+1)*xrange+(position[0]+1)] * xd;
+  coord3d c11 = field[(intpos[2]+1)*xrange*yrange+(intpos[1]+1)*xrange+position[0]] * (1.0 - xd) + field[(intpos[2]+1)*xrange*yrange+(intpos[1]+1)*xrange+(position[0]+1)] * xd;
+
+  coord3d c0 = c00 * (1.0 - yd) + c10 * yd;
+  coord3d c1 = c01 * (1.0 - yd) + c11 * yd;
+
+  coord3d c = c0 * (1.0 - zd) + c1 * zd;
+  return c;
 }
 
 coord3d Cube::getvector3(coord3d position) const{ //skeleton function for tricubic interpolation
@@ -230,7 +312,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 
 vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixeddir, double fixedcoord) const {
   double steplength = 0.01;
-  vector<vector<int>>tropplane;
+  vector<vector<int>> tropplane;
   if (fixeddir==2) {
   fixedcoord = (fixedcoord-origin[1])/spacing[1];
   /// fixedcoord should probably be scaled (according to the .vti header (the gimic outputfile spacing)) at the very first line of this function!
