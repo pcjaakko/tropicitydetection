@@ -229,7 +229,7 @@ void Cube::splitgrid(string gridfile, string weightfile, int bfielddir) const{
 
   for(int i=0;i<gridpoints.size();i++){
     trajectory traj(gridpoints[i],getvector(gridpoints[i]),0.01);
-    if (i%100==0){cout<<"i="<<i<<"/"<<gridpoints.size()<<"\n";}
+    //if (i%100==0){cout<<"i="<<i<<"/"<<gridpoints.size()<<"\n";}
         //cout<<"\nNEW TRAJECTORY CREATED AT\t"<<gridpoints[i]<<"\n";
     traj.complete(*this);
     int classification = traj.classify(*this, bfielddir);
@@ -314,7 +314,8 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
   double steplength = 0.01;
   vector<vector<int>> tropplane;
   if (fixeddir==2) {
-  fixedcoord = (fixedcoord-origin[1])/spacing[1];
+  //fixedcoord = (fixedcoord-origin[1])/spacing[1];
+  //deemed unnecessary in 2023
   /// fixedcoord should probably be scaled (according to the .vti header (the gimic outputfile spacing)) at the very first line of this function!
     for (int y=0;y<yrange;y++) {
     cout<<"y = "<<y<<"/"<<yrange<<endl;
