@@ -318,7 +318,7 @@ vector<vector<int>> Cube::gettropplane(string filename, int bfielddir, int fixed
   //deemed unnecessary in 2023
   /// fixedcoord should probably be scaled (according to the .vti header (the gimic outputfile spacing)) at the very first line of this function!
     for (int y=0;y<yrange;y++) {
-    cout<<"y = "<<y<<"/"<<yrange<<endl;
+    //cout<<"y = "<<y<<"/"<<yrange<<endl;
     vector<int> point_tropicity;
     tropplane.push_back(point_tropicity);
       for (int x=0;x<xrange;x++){
